@@ -1,6 +1,9 @@
 # Personalize-Expedia-Hotel-Searches
  Data Mining assignment 2
 
+##Data downloaded from here (unzip data.zip):
+https://www.kaggle.com/competitions/expedia-personalized-sort/data
+
 
 ##Sources
 
