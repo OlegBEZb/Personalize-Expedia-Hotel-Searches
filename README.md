@@ -7,6 +7,9 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/data
 
 ##Sources
 
+Code for 4th best score (VU students 3 years ago):
+https://github.com/igorpejic/personalize_expedia_hotel_searches_2013
+
 Paper from 5th best submission:
 https://www.arxiv-vanity.com/papers/1311.7679/
 
