@@ -25,5 +25,8 @@ https://www.dropbox.com/sh/5kedakjizgrog0y/_LE_DFCA7J/ICDM_2013
 Discussion on Kaggle:
 https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
+TODO:
+1. Add negative sampling for non-matched pairs
+
 
 
