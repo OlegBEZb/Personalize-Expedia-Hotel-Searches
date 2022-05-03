@@ -31,5 +31,6 @@ TODO:
 3. Add random baseline and evaluate internally
 4. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
 5. Boosting: do not encode site_id, prop_id etc - they have to be naterally granular
+6. Add eval func for ranking and classification
 
 
