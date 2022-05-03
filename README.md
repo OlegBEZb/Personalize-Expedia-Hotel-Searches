@@ -28,5 +28,6 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 TODO:
 1. Add negative sampling for non-matched pairs
 2. Multiply comp1_rate and comp1_rate_percent_diff
+3. Add random baseline and evaluate internally
 
 
