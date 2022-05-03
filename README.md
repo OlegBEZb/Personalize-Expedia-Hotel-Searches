@@ -30,5 +30,6 @@ TODO:
 2. Multiply comp1_rate and comp1_rate_percent_diff
 3. Add random baseline and evaluate internally
 4. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
+5. Boosting: do not encode site_id, prop_id etc - they have to be naterally granular
 
 
