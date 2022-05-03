@@ -37,8 +37,6 @@ def get_time_features(pdf: pd.DataFrame, time_col):
     pdf['is_year_start'] = pdf[time_col].dt.is_year_start.astype(np.int8)
     pdf['is_year_end'] = pdf[time_col].dt.is_year_end.astype(np.int8)
 
-    print('basics are calculated')
-
     def get_week_id(a_year, a_month, a_week):
         y = a_year
         if a_month == 12 and a_week == 1:
@@ -48,12 +46,19 @@ def get_time_features(pdf: pd.DataFrame, time_col):
         return y * 100 + a_week
 
     pdf['week_id'] = pdf.apply(lambda row: get_week_id(row.year, row.month, row.week), axis=1).astype(np.int32)
-    # pdf['week_start'] = pdf.groupby(['week_id'])[time_col].transform('min')
-    # pdf['week_end'] = pdf.groupby(['week_id'])[time_col].transform('max')
     pdf["season_num"] = (((pdf["month"]) // 3) % 4 + 1).astype(np.int8)
     pdf["week_summer_index"] = pdf["week"].apply(
         lambda w: w - 3 if w >= 3 and w <= 28 else 54 - w if w >= 29 else 0).astype(np.int8)
 
-    print('week-related are calculated')
-
     return pdf
+
+
+def get_target(row):
+    """
+    0=not clicked at all, 1=clicked but not booked, 5=booked
+    """
+    if row.booking_bool > 0:
+        return 5
+    if row.click_bool > 0:
+        return 1
+    return 0
