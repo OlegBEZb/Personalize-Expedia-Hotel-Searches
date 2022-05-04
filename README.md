@@ -32,4 +32,6 @@ TODO:
 4. Boosting: do not encode site_id, prop_id etc - they have to be naterally granular
 5. Add eval func for ranking and classification
 6. price and everything related to money are skewed. add transformations (log?)
+7. make optimizition oriented on ndcg regardless of the task (ranking, clf)
+8. add ordinal categories ot catboost
 
