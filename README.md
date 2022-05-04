@@ -27,10 +27,9 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
 TODO:
 1. Add negative sampling for non-matched pairs
-2. Multiply comp1_rate and comp1_rate_percent_diff
-3. Add random baseline and evaluate internally
-4. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
-5. Boosting: do not encode site_id, prop_id etc - they have to be naterally granular
-6. Add eval func for ranking and classification
-
+2. Add random baseline and evaluate internally
+3. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
+4. Boosting: do not encode site_id, prop_id etc - they have to be naterally granular
+5. Add eval func for ranking and classification
+6. price and everything related to money are skewed. add transformations (log?)
 
