@@ -30,43 +30,33 @@ TODO:
 2. Add random baseline and evaluate internally
 3. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
 4. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
-5. Add eval func for ranking and classification 
-6. make optimizition oriented on ndcg regardless of the task (ranking, clf)
-7. add ordinal categories ot catboost
-8. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
+5. Add eval func for ranking and classification
+6. add ordinal categories ot catboost
+7. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
    1. business trip = short and workday/non-weekend
    2. close to holiday +-3 days
    3. is a day off during a week day
-9. duration of stay % 7
-```
-# add morning, evening, work hours etc, lunch
-df["hour"] = df["date_time"].dt.hour
-df["minute"] = df["date_time"].dt.minute
-df["early_night"] = ((df["hour"]>19) | (df["hour"]<3)) # no added value from feature
-```
-11. Feature prooning and importance with SHAP
-12. Binary feature: children > 0 and rooms > 1
-13. Make a boolean if expedia has the lowest price. + the columns with the number of soruces cheaper than expedia
-14. average country price
-15. aggregations for:
+8. Feature prooning and importance with SHAP
+9. average country price
+10. aggregations for:
     1. countries (stars per country avg)
     2. location
     3. hotels
     4. people
     5. months\day\season\weekday (sales per time period)
-16. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
-17. binary for travelling abroad\inside
-18. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
-19. adjust the star by one if it's a chain
-20. take the diff prop_location_score1 and 'prop_location_score2'*7. multipy, sum. sum with coefs. may be correlated to the duration of stay
-21. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
-22. Normalize price per number of nights
-23. Order the price within the srch_id, destination loc_id
-24. Agoston: Correlation between adv and position
-25. Agoston: compare date and distribs betweeen train/test
-26. optional. Agoston: unsupervised private\business trip (children, ..)
-27. destination more than 3k
-28. Agoston: hists for comp1_rate
+11. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
+12. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
+13. adjust the star by one if it's a chain
+14. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
+15. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
+16. Normalize price per number of nights
+17. Order the price within the srch_id, destination loc_id
+18. Agoston: Correlation between adv and position
+19. Agoston: compare date and distribs betweeen train/test
+20. optional. Agoston: unsupervised private\business trip (children, ..)
+21. Agoston: hists for comp1_rate
+22. convert absolute percentage difference with competitor to the money difference
+23. Agoston: comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value. Any idea?
 
 # Storytelling:
 1. 02.05.2022
@@ -85,3 +75,6 @@ Added feature engineering and leaked with the price with tax. The score anyway i
 Public LB: 0.36825
 3. 
 
+
+# Tried, not worked:
+1. CatBoostRanker with ```'eval_metric': 'NDCG:top=5;type=Base;denominator=LogPosition'``` continued training after optimum ```'loss_function': 'QueryRMSE'``` and overfitted. The score from LB correlates right with the place when we started overfitting 

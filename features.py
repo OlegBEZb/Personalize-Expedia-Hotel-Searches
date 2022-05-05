@@ -3,6 +3,18 @@ import pandas as pd
 
 
 def get_time_features(pdf: pd.DataFrame, time_col):
+    pdf['hour'] = pdf[time_col].dt.hour.astype(np.int8)
+    pdf['minute'] = pdf[time_col].dt.minute.astype(np.int8)
+
+    pdf['morning_booking'] = ((pdf["hour"] >= 7) & (pdf["hour"] < 12))
+    pdf['afternoon_booking'] = ((pdf["hour"] >= 12) & (pdf["hour"] < 18))
+    pdf['evening_booking'] = ((pdf["hour"] >= 18) & (pdf["hour"] < 23))
+    pdf["late_evening_booking"] = ((pdf["hour"] >= 23) & (pdf["hour"] < 2))
+    pdf["night_booking"] = ((pdf["hour"] >= 2) & (pdf["hour"] < 7))
+    pdf["work_hour_booking"] = ((pdf["hour"] >= 8) & (pdf["hour"] < 18))
+    pdf["lunch_booking"] = ((pdf["hour"] >= 11) & (pdf["hour"] <= 13))
+
+
     pdf['day'] = pdf[time_col].dt.day.astype(np.int8)
     pdf['month'] = pdf[time_col].dt.month.astype(np.int8)
     pdf['year'] = pdf[time_col].dt.year.astype(np.int16)

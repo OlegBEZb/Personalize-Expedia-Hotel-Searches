@@ -1,3 +1,4 @@
 ipywidgets
 feature-engine
 fastprogress
+pandarallel

@@ -117,8 +117,7 @@ class Reducer:
                 if s.max() <= cand_info.max and s.min() >= cand_info.min:
                     if verbose: print(f'convert {colname} to {cand}')
                     if isnull:
-                        # return s.astype(self.null_int[cand]())
-                        return s.to_numpy(dtype=cand, na_value=np.nan)
+                        return s.astype(self.null_int[cand]())
                     else:
                         return s.astype(cand)
 
