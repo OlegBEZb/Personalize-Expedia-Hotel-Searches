@@ -36,11 +36,13 @@ TODO:
 8. Calculate the dates of the staying + its features using the date of booking + the days shift
 9. 
 ```
+# add morning, evening, work hours etc
 df["hour"] = df["date_time"].dt.hour
 df["minute"] = df["date_time"].dt.minute
 df["early_night"] = ((df["hour"]>19) | (df["hour"]<3)) # no added value from feature
 ```
-11. switch to parquet from csv
+11. Feature prooning and importance with SHAP
+12. Binary feature: children >0 and rooms > 1
 
 # Storytelling:
 1. 02.05.2022
@@ -54,5 +56,8 @@ X_train, X_test, y_train, y_test, groups_train, groups_test = train_test_split(
     X, y, groups, test_size=0.1, shuffle=False)  # doesn't preserve groups
 ```
 Public LB: 0.32661
-2. 
+2. 04.05.2022
+Added feature engineering and leaked with the price with tax. The score anyway improved
+Public LB: 0.36825
+3. 
 
