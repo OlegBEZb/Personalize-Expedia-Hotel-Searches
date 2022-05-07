@@ -35,21 +35,13 @@ TODO:
 7. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
 8. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
 9. add ordinal categories ot catboost
-10. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
-    2. close to holiday +-3 days
-    3. is a day off during a week day
 11. Feature prooning and importance with SHAP
-12. average country price
 13. aggregations for:
-    1. countries (stars per country avg)
-    2. location
-    3. hotels
     4. people
     5. months\day\season\weekday (sales per time period)
 14. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
 15. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
 16. adjust the star by one if it's a chain
-18. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
 20. Order the price within the srch_id, destination loc_id
 21. Agoston: Correlation between adv and position
 22. Agoston: compare date and distribs betweeen train/test
@@ -68,6 +60,7 @@ DONE:
     4. search id
 3. business trip = short, no children, 1 adult
 4. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay: no strong correlation
+5. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
 
 # Storytelling:
 1. 02.05.2022
