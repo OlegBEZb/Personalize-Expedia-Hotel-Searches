@@ -36,7 +36,6 @@ TODO:
 8. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
 9. add ordinal categories ot catboost
 10. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
-    1. business trip = short and workday/non-weekend
     2. close to holiday +-3 days
     3. is a day off during a week day
 11. Feature prooning and importance with SHAP
@@ -52,7 +51,6 @@ TODO:
 16. adjust the star by one if it's a chain
 17. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
 18. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
-19. Normalize price per number of nights
 20. Order the price within the srch_id, destination loc_id
 21. Agoston: Correlation between adv and position
 22. Agoston: compare date and distribs betweeen train/test
@@ -61,6 +59,15 @@ TODO:
 25. convert absolute percentage difference with competitor to the money difference
 26. Agoston: comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value. Any idea?
 27. Having aggregations, try the difference between the current month and the prev, for example
+
+DONE:
+1. Normalize price per number of nights
+2. aggregations for:
+    1. visitor country
+    2. destination country 
+    3. hotel (property id)
+    4. search id
+3. business trip = short, no children, 1 adult
 
 # Storytelling:
 1. 02.05.2022
