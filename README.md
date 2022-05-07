@@ -102,7 +102,10 @@ Public LB: 0.36825
    1. added features only
    Public LB: 0.36995 
    2. submission 4 with new features shew overfit with local 0.36886 and public 0.36163
-4. YetiRank is added http://proceedings.mlr.press/v14/gulin11a.html
+4. YetiRank is added http://proceedings.mlr.press/v14/gulin11a.html 
+Validation is changed into GroupShuffleSplit
+Public LB: 0.33767
+5. 
 
 
 # Tried, not worked:
