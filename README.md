@@ -27,7 +27,7 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
 TODO:
 1. Oleg: try simplified CV and compare with LB
-2. Oleg: Feature prooning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
+2. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
 3. Oleg: Try classification once again
 4. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
 5. Oleg: check losses close to NDCG as there is a mismatch during optimization
@@ -36,7 +36,7 @@ TODO:
 8. Add random baseline and evaluate internally
 9. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
 10. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
-11. add ordinal categories ot catboost
+11. add ordinal categories to catboost
 12. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
     1. business trip = short and workday/non-weekend
     2. close to holiday +-3 days
@@ -68,6 +68,19 @@ TODO:
 32. Add default model
 33. Train model on train+val combined
 34. use position as a feature but ONLY when random is False
+
+
+# DONE:
+1. Normalize price per number of nights
+2. aggregations for:
+    1. visitor country
+    2. destination country 
+    3. hotel (property id)
+    4. search id
+3. business trip = short, no children, 1 adult
+4. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay: no strong correlation
+5. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
+20. Order the price within the srch_id, srch_destination_id, prop_id
 
 
 # Storytelling:
