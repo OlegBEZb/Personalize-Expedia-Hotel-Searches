@@ -42,7 +42,6 @@ TODO:
 14. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
 15. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
 16. adjust the star by one if it's a chain
-20. Order the price within the srch_id, destination loc_id
 21. Agoston: Correlation between adv and position
 22. Agoston: compare date and distribs betweeen train/test
 23. optional. Agoston: unsupervised private\business trip (children, ..)
@@ -61,6 +60,8 @@ DONE:
 3. business trip = short, no children, 1 adult
 4. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay: no strong correlation
 5. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
+20. Order the price within the srch_id, srch_destination_id, prop_id
+
 
 # Storytelling:
 1. 02.05.2022
