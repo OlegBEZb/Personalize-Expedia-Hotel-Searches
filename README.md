@@ -49,7 +49,6 @@ TODO:
 14. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
 15. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
 16. adjust the star by one if it's a chain
-17. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
 18. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
 20. Order the price within the srch_id, destination loc_id
 21. Agoston: Correlation between adv and position
@@ -68,6 +67,7 @@ DONE:
     3. hotel (property id)
     4. search id
 3. business trip = short, no children, 1 adult
+4. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay: no strong correlation
 
 # Storytelling:
 1. 02.05.2022
