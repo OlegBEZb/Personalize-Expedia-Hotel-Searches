@@ -43,11 +43,7 @@ TODO:
     1. business trip = short and workday/non-weekend
     2. close to holiday +-3 days
     3. is a day off during a week day
-13. average country price
 14. aggregations for:
-    1. countries (stars per country avg)
-    2. location
-    3. hotels
     4. people
     5. months\day\season\weekday (sales per time period)
 15. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
@@ -55,11 +51,8 @@ TODO:
 17. adjust the star by one if it's a chain
 18. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
 19. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
-20. Normalize price per number of nights
-21. Order the price within the srch_id, destination loc_id
 22. Agoston: Correlation between adv and position
 23. Agoston: compare date and distribs betweeen train/test
-24. optional. Agoston: unsupervised private\business trip (children, ..)
 25. Agoston: hists for comp1_rate
 26. convert absolute percentage difference with competitor to the money difference
 27. Agoston: comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value. Any idea?
@@ -84,7 +77,7 @@ TODO:
 4. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay: no strong correlation
 5. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
 6. Order the price within the srch_id, srch_destination_id, prop_id
-7. 
+7. Calculate mean target values per propert_id
 
 
 # Storytelling:
