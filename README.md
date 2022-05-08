@@ -29,6 +29,8 @@ TODO:
 1. Oleg: try simplified CV and compare with LB
 2. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
 3. Oleg: Try classification once again
+   1. Random forest
+   2. Extreme trees
 4. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
 5. Oleg: check losses close to NDCG as there is a mismatch during optimization
 6. Oleg: add evaluation on train
@@ -68,6 +70,7 @@ TODO:
 32. Add default model
 33. Train model on train+val combined
 34. use position as a feature but ONLY when random is False
+35. prop_review_score - 0 means there have been no reviews, null that the information is not available. What to do?
 
 
 # DONE:
@@ -80,7 +83,8 @@ TODO:
 3. business trip = short, no children, 1 adult
 4. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay: no strong correlation
 5. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
-20. Order the price within the srch_id, srch_destination_id, prop_id
+6. Order the price within the srch_id, srch_destination_id, prop_id
+7. 
 
 
 # Storytelling:
@@ -105,7 +109,15 @@ Public LB: 0.36825
 4. YetiRank is added http://proceedings.mlr.press/v14/gulin11a.html 
 Validation is changed into GroupShuffleSplit
 Public LB: 0.33767
-5. 
+5. Simple validation split is added. srch_id % 10 == 5 -> test, srch_id % 10 == 1 -> val, rest ->train. Idea from https://arxiv.org/pdf/1311.7679v1.pdf 
+Only 200 epochs.
+Train: 0.07871
+Val: 0.35554
+Test: 0.35682
+Public LB: 0.31550
+6. 08.05.2022
+Public LB: 0.33190
+7. 
 
 
 # Tried, not worked:
