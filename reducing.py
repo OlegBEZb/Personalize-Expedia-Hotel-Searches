@@ -108,14 +108,14 @@ class Reducer:
                 if isinstance(coltype, object) and self.use_categoricals:
                     # check for all-strings series
                     if s.apply(lambda x: isinstance(x, str)).all():
-                        if verbose: print(f'convert {colname} to categorical')
+                        if verbose: print(f'convert {colname} from {coltype} to categorical')
                         return s.astype('category')
                 if verbose: print(f'{colname} is {coltype} - Skip..')
                 return s
             # find right candidate
             for cand, cand_info in self._type_candidates(conv_key):
                 if s.max() <= cand_info.max and s.min() >= cand_info.min:
-                    if verbose: print(f'convert {colname} to {cand}')
+                    if verbose: print(f'convert {colname} from {coltype} to {cand}')
                     if isnull:
                         return s.astype(self.null_int[cand]())
                     else:

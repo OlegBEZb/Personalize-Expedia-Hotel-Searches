@@ -1,4 +1,6 @@
 from sklearn.model_selection import train_test_split
+from metrics import ndcg
+import pandas as pd
 
 
 def train_test_group_split(*arrays,
@@ -26,3 +28,21 @@ def get_target(row):
     if row.click_bool > 0:
         return 1
     return 0
+
+
+def predict_in_format(model, data, pool, group_col, predict_item_col, gt_col=None):
+    preds = model.predict(pool)
+
+    values = {group_col: data[group_col],
+              predict_item_col: data[predict_item_col],
+              'pred': preds}
+
+    values_df = pd.DataFrame(values)
+    values_df.sort_values(by=[group_col, 'pred'], ascending=[True, False], inplace=True)
+
+    if gt_col is not None:
+        values_df['gt'] = gt_col
+        ndcg_score = values_df.groupby(group_col)['gt'].apply(ndcg, at=5).mean()
+        print('Local test NDCG@5:', ndcg_score)
+
+    return values_df

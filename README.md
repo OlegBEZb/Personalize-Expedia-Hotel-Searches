@@ -26,31 +26,51 @@ Discussion on Kaggle:
 https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
 TODO:
-1. Oleg: Try classification once again
-2. Oleg: check losses close to NDCG as there is a mismatch during optimization
-3. Oleg: add evaluation on train
-4. Oleg: try simplified CV and compare with LB
-5. Add negative sampling for non-matched pairs
-6. Add random baseline and evaluate internally
-7. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
-8. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
-9. add ordinal categories ot catboost
-11. Feature prooning and importance with SHAP
-13. aggregations for:
+1. Oleg: try simplified CV and compare with LB
+2. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
+3. Oleg: Try classification once again
+4. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
+5. Oleg: check losses close to NDCG as there is a mismatch during optimization
+6. Oleg: add evaluation on train
+7. Add negative sampling for non-matched pairs
+8. Add random baseline and evaluate internally
+9. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
+10. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
+11. add ordinal categories to catboost
+12. Calculate the dates of the staying + its features using the date of booking + the days shift. add holidays
+    1. business trip = short and workday/non-weekend
+    2. close to holiday +-3 days
+    3. is a day off during a week day
+13. average country price
+14. aggregations for:
+    1. countries (stars per country avg)
+    2. location
+    3. hotels
     4. people
     5. months\day\season\weekday (sales per time period)
-14. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
-15. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
-16. adjust the star by one if it's a chain
-21. Agoston: Correlation between adv and position
-22. Agoston: compare date and distribs betweeen train/test
-23. optional. Agoston: unsupervised private\business trip (children, ..)
-24. Agoston: hists for comp1_rate
-25. convert absolute percentage difference with competitor to the money difference
-26. Agoston: comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value. Any idea?
-27. Having aggregations, try the difference between the current month and the prev, for example
+15. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
+16. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
+17. adjust the star by one if it's a chain
+18. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
+19. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
+20. Normalize price per number of nights
+21. Order the price within the srch_id, destination loc_id
+22. Agoston: Correlation between adv and position
+23. Agoston: compare date and distribs betweeen train/test
+24. optional. Agoston: unsupervised private\business trip (children, ..)
+25. Agoston: hists for comp1_rate
+26. convert absolute percentage difference with competitor to the money difference
+27. Agoston: comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value. Any idea?
+28. Having aggregations, try the difference between the current month and the prev, for example
+29. Climate/weather in the src and dst places + difference?
+30. hotel_cumulative_share, a measure of how often a hotel has been booked previously, and previous_user_hotel_interaction, a categorical variable indicating if a user had clicked or purchased this hotel previously, are the top 2 most important features for our logged-in users. Coalescing a hotel’s purchase history into learned “embeddings” using latent factor models may add significant value to the model.
+31. Add SVD-based recsys
+32. Add default model
+33. Train model on train+val combined
+34. use position as a feature but ONLY when random is False
 
-DONE:
+
+# DONE:
 1. Normalize price per number of nights
 2. aggregations for:
     1. visitor country
@@ -78,7 +98,14 @@ Public LB: 0.32661
 2. 04.05.2022
 Added feature engineering and leaked with the price with tax. The score anyway improved
 Public LB: 0.36825
-3. 
+3. 05.05.2022 
+   1. added features only
+   Public LB: 0.36995 
+   2. submission 4 with new features shew overfit with local 0.36886 and public 0.36163
+4. YetiRank is added http://proceedings.mlr.press/v14/gulin11a.html 
+Validation is changed into GroupShuffleSplit
+Public LB: 0.33767
+5. 
 
 
 # Tried, not worked:
