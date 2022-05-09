@@ -26,9 +26,10 @@ Discussion on Kaggle:
 https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
 TODO:
-1. Ranking baseline
-2. Missing values. Catboost does a weird thing
-3. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
+1. Outlier detection: look for outliers on city and country level when replacing them with mean per category
+2. Ranking baseline
+3. Missing values. Catboost does a weird thing
+4. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
 https://colab.research.google.com/github/catboost/tutorials/blob/master/feature_selection/select_features_tutorial.ipynb#scrollTo=hCEUEOb_SqEk
 4. Oleg: Try classification once again
    1. Random forest
