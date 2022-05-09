@@ -67,6 +67,7 @@ https://colab.research.google.com/github/catboost/tutorials/blob/master/feature_
 30. copy stats for position to the subm df directly
 31. prop_review_score - 0 means there have been no reviews, null that the information is not available. What to do?
 32. Add memory cleaning from kaggle to the main notebook
+33. Catboost split evaluation into batches and avg
 
 
 # DONE:
