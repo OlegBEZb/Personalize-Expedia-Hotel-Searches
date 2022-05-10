@@ -3,3 +3,6 @@ plotly
 feature-engine
 fastprogress
 pandarallel
+pickle5
+catboost
+shap

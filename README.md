@@ -26,31 +26,30 @@ Discussion on Kaggle:
 https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
 TODO:
-1. Outlier detection: look for outliers on city and country level when replacing them with mean per category
-2. Ranking baseline
-3. Missing values. Catboost does a weird thing
-4. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
+1. Add garbage collection for launches on kaggle
+2. Outlier detection: look for outliers on city and country level when replacing them with mean per category
+3. Ranking baseline
+4. Missing values. Catboost does a weird thing
+5. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
 https://colab.research.google.com/github/catboost/tutorials/blob/master/feature_selection/select_features_tutorial.ipynb#scrollTo=hCEUEOb_SqEk
-4. Oleg: Try classification once again
+6. Oleg: Try classification once again
    1. Random forest
    2. Extreme trees
-5. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
-6. Add negative sampling for non-matched pairs
-7. Add random baseline and evaluate internally
-8. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
-9. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
-10. add ordinal categories to catboost
-11. dates of the staying + its features. add holidays
+7. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
+8. Add negative sampling for non-matched pairs
+9. Add random baseline and evaluate internally
+10. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
+11. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
+12. add ordinal categories to catboost
+13. dates of the staying + its features. add holidays
     1. business trip = short and workday/non-weekend
     2. close to holiday +-3 days
     3. is a day off during a week day
     4. add days of week for start for example
-12. aggregations for:
-    4. people
+    5. add boolean for a weekend
+14. aggregations for:
     5. months\day\season\weekday (sales per time period)
-13. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
-14. add the difference between stars visitor_hist_starrating, prop_starrating, prop_review_score. also normalize by the price
-15. adjust the star by one if it's a chain
+15. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
 16. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
 17. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
 18. Agoston: Correlation between adv and position
@@ -69,6 +68,7 @@ https://colab.research.google.com/github/catboost/tutorials/blob/master/feature_
 31. prop_review_score - 0 means there have been no reviews, null that the information is not available. What to do?
 32. Add memory cleaning from kaggle to the main notebook
 33. Catboost split evaluation into batches and avg
+34. Return shuffle split back
 
 
 # DONE:
