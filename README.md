@@ -118,7 +118,7 @@ Public LB: 0.33190
 7. 09.05.2022
 Fitted for 2.5k iterations on Kaggle
 Public LB: 0.38823
-8. 
+8. 10.05.2022, 3.75k iterations (early stop), original + prop location + historical price, Public LB: 0.39121
 
 
 # Tried, not worked:
