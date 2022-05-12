@@ -66,9 +66,9 @@ https://colab.research.google.com/github/catboost/tutorials/blob/master/feature_
 29. use position as a feature but ONLY when random is False
 30. copy stats for position to the subm df directly
 31. prop_review_score - 0 means there have been no reviews, null that the information is not available. What to do?
-32. Add memory cleaning from kaggle to the main notebook
 33. Catboost split evaluation into batches and avg
 34. Return shuffle split back
+35. skopt for catboost (on 3k epochs would be fine to understand the potential?)
 
 
 # DONE:
@@ -119,6 +119,13 @@ Public LB: 0.33190
 Fitted for 2.5k iterations on Kaggle
 Public LB: 0.38823
 8. 10.05.2022, 3.75k iterations (early stop), original + prop location + historical price, Public LB: 0.39121
+9. 11.05.2022
+11th submission. CatBoostRanker, bestIteration = 4991. 157 features without aggregations (only price order per srch and dst ids)
+Train: 0.45396
+Val: 0.39305
+Test: 0.39381
+Public LB: 0.39492
+10. 
 
 
 # Tried, not worked:
