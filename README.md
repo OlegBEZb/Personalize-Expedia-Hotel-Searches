@@ -26,11 +26,13 @@ Discussion on Kaggle:
 https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
 TODO:
-1. Add garbage collection for launches on kaggle
-2. Outlier detection: look for outliers on city and country level when replacing them with mean per category
-3. Ranking baseline
-4. Missing values. Catboost does a weird thing
-5. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
+1. add aggregated features based on visitor_hist_adr_usd per visitor_location_country_id
+2. more aggregated features by goupby some columns and take mean of price per day
+4. Add garbage collection for launches on kaggle
+5. Outlier detection: look for outliers on city and country level when replacing them with mean per category
+6. Ranking baseline
+7. Missing values. Catboost does a weird thing
+8. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
 https://colab.research.google.com/github/catboost/tutorials/blob/master/feature_selection/select_features_tutorial.ipynb#scrollTo=hCEUEOb_SqEk
 6. Oleg: Try classification once again
    1. Random forest
@@ -125,7 +127,9 @@ Train: 0.45396
 Val: 0.39305
 Test: 0.39381
 Public LB: 0.39492
-10. 
+12th submission. CatBoostRanker, bestIteration = 4997. 198 added new aggreagted features
+Val: 0.40018
+Public LB: 0.40190
 
 
 # Tried, not worked:
