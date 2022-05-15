@@ -6,3 +6,4 @@ pandarallel
 pickle5
 catboost
 shap
+pyarrow
