@@ -138,6 +138,12 @@ Public LB: 0.39492
 12th submission. CatBoostRanker, bestIteration = 4997. 198 added new aggregated features
 Val: 0.40018
 Public LB: 0.40190
+10. 14.05.2022
+13th submission. SVD
+Public: 0.27837
+11. 15.05.2022
+14th submissio. LGBM
+Public: 0.38713
 
 # Open questions
 
