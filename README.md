@@ -144,6 +144,14 @@ Public: 0.27837
 11. 15.05.2022
 14th submissio. LGBM
 Public: 0.38713
+12. 16.05.2022 
+Did a long selection of about a third (others were even not tried) aggregation parameters (some were checked with LossValueChange while the others with SHAP)
+Train: 0.4586
+Val: 0.39704
+Test: 0.39461
+Public LB: 0.40357
+Trained for 5.5k epochs. The validation started distorting
+13. 
 
 # Open questions
 
