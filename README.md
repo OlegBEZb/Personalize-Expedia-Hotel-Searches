@@ -1,76 +1,84 @@
 # Personalize-Expedia-Hotel-Searches
  Data Mining assignment 2
 
-##Data downloaded from here (unzip data.zip):
-https://www.kaggle.com/competitions/expedia-personalized-sort/data
+##Data downloaded from here:
+https://www.kaggle.com/competitions/2nd-assignment-dmt2022/data
 
 
 ##Sources
 
-Code for 4th best score (VU students 3 years ago):
+* Code for 4th best score (VU students 3 years ago):
 https://github.com/igorpejic/personalize_expedia_hotel_searches_2013
-
-Paper from 5th best submission:
+* Paper from 5th best submission:
 https://www.arxiv-vanity.com/papers/1311.7679/
-
-
-Not so good submission but nice summary:
+* Not so good submission but nice summary:
 http://www.davidwind.dk/wp-content/uploads/2014/07/main.pdf
-
-
-Final presentation from the competition + dataset description:
+* Final presentation from the competition + dataset description:
 https://www.dropbox.com/sh/5kedakjizgrog0y/_LE_DFCA7J/ICDM_2013
-
-
-Discussion on Kaggle:
+* Discussion on Kaggle:
 https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 
-TODO:
-1. add aggregated features based on visitor_hist_adr_usd per visitor_location_country_id
-2. more aggregated features by goupby some columns and take mean of price per day
-4. Add garbage collection for launches on kaggle
-5. Outlier detection: look for outliers on city and country level when replacing them with mean per category
-6. Ranking baseline
-7. Missing values. Catboost does a weird thing
-8. Oleg: Feature pruning and importance with SHAP https://catboost.ai/en/docs/features/feature-importances-calculation
-https://colab.research.google.com/github/catboost/tutorials/blob/master/feature_selection/select_features_tutorial.ipynb#scrollTo=hCEUEOb_SqEk
-6. Oleg: Try classification once again
-   1. Random forest
-   2. Extreme trees
-7. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
-8. Add negative sampling for non-matched pairs
-9. Add random baseline and evaluate internally
-10. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines
-11. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
-12. add ordinal categories to catboost
-13. dates of the staying + its features. add holidays
-    1. business trip = short and workday/non-weekend
-    2. close to holiday +-3 days
-    3. is a day off during a week day
-    4. add days of week for start for example
-    5. add boolean for a weekend
-14. aggregations for:
-    5. months\day\season\weekday (sales per time period)
-15. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
-16. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
-17. Agoston: find the normalized price: check if the price for the same hotel is really different (mb for different countries of number of days)
-18. Agoston: Correlation between adv and position
-19. Agoston: compare date and distribs betweeen train/test
-20. Agoston: hists for comp1_rate
-21. convert absolute percentage difference with competitor to the money difference
-22. Agoston: comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value. Any idea?
-23. Having aggregations, try the difference between the current month and the prev, for example
-24. Climate/weather in the src and dst places + difference?
-25. hotel_cumulative_share, a measure of how often a hotel has been booked previously, and previous_user_hotel_interaction, a categorical variable indicating if a user had clicked or purchased this hotel previously, are the top 2 most important features for our logged-in users. Coalescing a hotel’s purchase history into learned “embeddings” using latent factor models may add significant value to the model.
-26. Add SVD-based recsys
-27. Add default model
-28. Train model on train+val combined
-29. use position as a feature but ONLY when random is False
-30. copy stats for position to the subm df directly
-31. prop_review_score - 0 means there have been no reviews, null that the information is not available. What to do?
-33. Catboost split evaluation into batches and avg
-34. Return shuffle split back
-35. skopt for catboost (on 3k epochs would be fine to understand the potential?)
+# TODOs
+
+## EDA
+1. prop_location_score1 and 'prop_location_score2' may be correlated to the duration of stay
+2. Correlation between adv and position
+
+## Preprocessing
+1. Missing values. Catboost does a weird thing
+2. Outlier detection: look for outliers on city and country level when replacing them with mean per category 
+3. Add negative sampling for non-matched pairs
+4. Return shuffle split back to refresh the distrib from time to time
+5. Fill missing values with some historicals, competitors? 
+6. Fill missing prop_review_score, prop_location_score2, srch_query_affinity_score values with the worst case scenario?
+7. convert absolute percentage difference with competitor to the money difference (The absolute percentage difference 
+(if one exists) between Expedia and competitor N’s price (Expedia’s price the denominator))
+8. Price anomaly detection https://www.kaggle.com/code/nikitsoftweb/production-time-series-of-price-anomaly-detection/notebook
+
+## Features
+1. prop_starrating_monotonic = abs(prop_starrating - mean(prop_starrating[booking_bool])) (from some winner)
+2. add visitor_hist_adr_usd and np.exp(df['prop_log_historical_price']) to comparison_col when build features for price
+3. dates of the staying + its features. add holidays
+   1. business trip = short and workday/non-weekend
+   2. close to holiday +-3 days
+   3. is a day off during a week day 
+   4. add boolean for a weekend
+4. aggregations for months\day\season\weekday (sales per time period)
+   1. Having aggregations, try the difference between the current month and the prev, for example
+5. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
+6. order of the hotel 
+    1. for this month
+    2. for this dst region
+    3. from this search region
+    4. for this booking period
+7. Numerical features averaged over srch_id prop_id destination_id
+8. hotel_cumulative_share, a measure of how often a hotel has been booked previously, and 
+previous_user_hotel_interaction (how), a categorical variable indicating if a user had clicked or purchased this hotel 
+previously, are the top 2 most important features for our logged-in users. Coalescing a hotel’s purchase history into 
+learned “embeddings” using latent factor models may add significant value to the model.
+
+## Modeling
+1. Baselines
+   1. Add random baseline and evaluate internally
+   2. Ranking baseline
+   3. Add default model (for each dst country predict the most famous hotels)
+   4. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines 
+2. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
+3. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
+4. add ordinal categories to catboost
+5. Train model on train+val combined 
+6. try classification once again
+      1. Random forest
+      2. Extreme trees 
+7. skopt for catboost (on 3k epochs would be fine to understand the potential?)
+8. Catboost split evaluation into batches and avg
+
+## Unsorted backlog
+1. use position as a feature but ONLY when random is False 
+2. copy stats for position to the subm df directly
+3. prop_review_score - 0 means there have been no reviews, null that the information is not available. What to do?
+4. per hotel: booking/counting, click/counting
+
 
 
 # DONE:
@@ -127,10 +135,13 @@ Train: 0.45396
 Val: 0.39305
 Test: 0.39381
 Public LB: 0.39492
-12th submission. CatBoostRanker, bestIteration = 4997. 198 added new aggreagted features
+12th submission. CatBoostRanker, bestIteration = 4997. 198 added new aggregated features
 Val: 0.40018
 Public LB: 0.40190
 
+# Open questions
+
+1. comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value.
 
 # Tried, not worked:
 1. CatBoostRanker with ```'eval_metric': 'NDCG:top=5;type=Base;denominator=LogPosition'``` continued training after optimum ```'loss_function': 'QueryRMSE'``` and overfitted. The score from LB correlates right with the place when we started overfitting 
