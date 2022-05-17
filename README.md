@@ -153,12 +153,16 @@ Test: 0.39461
 Public LB: 0.40357
 Trained for 5.5k epochs. The validation started distorting
 13. 17.05.2022
+16th submission.
 Switched to YetiRankPairwise. Trained twice faster and with better results. Worked a lot on feature selection. Processed
 about a half. Removed ones with 0 shap values.
 Train: 0.44847
 Val: 0.40284
 Test: 0.39971
 Public LB: 0.40694
+17th submission.
+Trained on train + val, stopped on test. NOT ALLOWED TO ANALYSE, JUST TO CHECK THE BOOST FROM THE TRICK
+Public LB: 0.40920
 14. 
 
 # Open questions
