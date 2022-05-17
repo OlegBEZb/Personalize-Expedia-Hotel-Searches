@@ -73,6 +73,7 @@ learned “embeddings” using latent factor models may add significant value to
       2. Extreme trees 
 7. skopt for catboost (on 3k epochs would be fine to understand the potential?)
 8. Catboost split evaluation into batches and avg
+9. Run CatBoost on local CPU with 400 features for night
 
 ## Unsorted backlog
 1. use position as a feature but ONLY when random is False 
