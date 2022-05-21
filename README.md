@@ -36,15 +36,14 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 8. Price anomaly detection https://www.kaggle.com/code/nikitsoftweb/production-time-series-of-price-anomaly-detection/notebook
 
 ## Features
-1. prop_starrating_monotonic = abs(prop_starrating - mean(prop_starrating[booking_bool])) (from some winner)
-2. add for prop_loc_score_2 have to be in bins (too many values)
+2. agg for prop_loc_score_2 have to be in bins (too many values) https://stackoverflow.com/questions/45273731/binning-a-column-with-python-pandas
 3. add visitor_hist_adr_usd and np.exp(df['prop_log_historical_price']) to comparison_col when build features for price
-4. dates of the staying + its features. add holidays
+4. dates of the staying + its features.
    1. business trip = short and workday/non-weekend
    2. close to holiday +-3 days
    3. is a day off during a week day 
    4. add boolean for a weekend
-5. aggregations for months\day\season\weekday (sales per time period)
+5. aggregations for day\weekday (sales per time period)
    1. Having aggregations, try the difference between the current month and the prev, for example
 6. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
 7. order of the hotel 
@@ -57,6 +56,8 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 previous_user_hotel_interaction (how), a categorical variable indicating if a user had clicked or purchased this hotel 
 previously, are the top 2 most important features for our logged-in users. Coalescing a hotel’s purchase history into 
 learned “embeddings” using latent factor models may add significant value to the model.
+10. Do date_time_ordinal for date, not datetime?
+11. order by previous booking prob
 
 ## Modeling
 1. Baselines

@@ -7,3 +7,4 @@ pickle5
 catboost
 shap
 pyarrow
+markupsafe==2.0.1
