@@ -1,0 +1,9 @@
+workflows:
+  - name: train-catboost
+    provider: python
+    requirements: requirements.txt
+    python_script: catboost_ranker.py
+    artifacts:
+      - catboost_model
+    resources:
+      gpu: ${{ gpu }}
