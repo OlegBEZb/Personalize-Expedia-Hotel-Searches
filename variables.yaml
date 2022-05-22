@@ -1,0 +1,4 @@
+variables:
+  train-catboost:
+    gpu: 1
+
