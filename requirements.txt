@@ -1,10 +1,11 @@
+pandas==1.2.4
 ipywidgets
 plotly
 feature-engine
 fastprogress
 pandarallel
-pickle5
 catboost
 shap
 pyarrow
 markupsafe==2.0.1
+gdown
