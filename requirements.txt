@@ -9,3 +9,4 @@ shap
 pyarrow
 markupsafe==2.0.1
 gdown
+json

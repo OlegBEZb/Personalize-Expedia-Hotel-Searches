@@ -1,11 +1,16 @@
 import catboost
 from catboost import CatBoostRanker, Pool, MetricVisualizer, cv
+import numpy as np
 import pandas as pd
 
 import os
 import gc
+import json
+
+import shap
 
 data_path = './data'
+output_folder = './trained_models'
 
 cols_to_use = ['srch_id',
                'site_id',
@@ -370,9 +375,6 @@ predict_item_col = 'prop_id'
 
 X_train = pd.read_feather(os.path.join(data_path, 'X_train.feather'), columns=cols_to_use)
 y_train = pd.read_feather(os.path.join(data_path, 'y_train.feather'))['target']
-# X_train = pd.read_pickle(os.path.join(data_path, 'X_train.pickle'))
-# X_train = X_train[cols_to_use]
-# y_train = pd.read_pickle(os.path.join(data_path, 'y_train.pickle'))
 print('X_train.shape', X_train.shape)
 
 train_pool = Pool(data=X_train,
@@ -380,14 +382,11 @@ train_pool = Pool(data=X_train,
                   group_id=X_train[group_col],
                   cat_features=CAT_FEATURES,
                   )
-del X_train, y_train;
+# del X_train, y_train;
 gc.collect()
 
 X_val = pd.read_feather(os.path.join(data_path, 'X_val.feather'), columns=cols_to_use)
 y_val = pd.read_feather(os.path.join(data_path, 'y_val.feather'))['target']
-# X_val = pd.read_pickle(os.path.join(data_path, 'X_val.pickle'))
-# X_val = X_val[cols_to_use]
-# y_val = pd.read_pickle(os.path.join(data_path, 'y_val.pickle'))
 print('X_val.shape', X_val.shape)
 
 val_pool = Pool(data=X_val,
@@ -395,8 +394,7 @@ val_pool = Pool(data=X_val,
                 group_id=X_val[group_col],
                 cat_features=CAT_FEATURES,
                 )
-
-del X_val, y_val;
+# del X_val, y_val;
 gc.collect()
 
 params = {
@@ -410,8 +408,49 @@ params = {
     "task_type": "GPU",
 }
 
+################## TUNING ##################
+
 model = CatBoostRanker(**params)
 model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
 
-os.makedirs('./trained_models', exist_ok=True)
-model.save_model('trained_models/catboost_model')
+os.makedirs(output_folder, exist_ok=True)
+model.save_model(os.path.join(output_folder, 'catboost_model'))
+
+################## EVAL ##################
+
+metrics_dict = dict()
+metrics_dict['val_NDCG@5'] = model.eval_metrics(val_pool,
+                                                'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                ntree_start=model.tree_count_ - 1)
+
+metrics_dict['train_NDCG@5'] = model.eval_metrics(train_pool,
+                                                  'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                  ntree_start=model.tree_count_ - 1)
+
+X_test = pd.read_feather(os.path.join('../Personalize-Expedia-Hotel-Searches/data/', 'X_test.feather'),
+                         columns=cols_to_use)
+y_test = pd.read_feather(os.path.join('../Personalize-Expedia-Hotel-Searches/data/', 'y_test.feather'))['target']
+print('X_test.shape', X_test.shape)
+test_pool = Pool(data=X_test,
+                 label=y_test,
+                 group_id=X_test[group_col],
+                 cat_features=CAT_FEATURES,
+                 )
+
+metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
+                                                 'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                 ntree_start=model.tree_count_ - 1)
+
+with open(os.path.join(output_folder, 'ndcg_scores.json'), 'w') as fp:
+    json.dump(my_dict, fp)
+
+################## FEATURE IMPORTANCE ##################
+
+
+explainer = shap.Explainer(model)
+shap_values = explainer(val_pool)  # X_val or val_pool
+
+features = X_val.columns
+mean_shaps = np.abs(shap_values.values).mean(0)
+shaps_df = pd.DataFrame({'feature': features, 'shap': mean_shaps})
+shaps_df.to_csv(os.path.join(output_folder, 'shaps_df.csv'), index=False)
