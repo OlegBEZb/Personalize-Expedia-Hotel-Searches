@@ -1,4 +1,5 @@
 import gdown
+import os
 
 data_path = './data'
 os.makedirs(data_path, exist_ok=True)
