@@ -11,7 +11,7 @@ gdown.download(f"https://drive.google.com/uc?id={X_val_id}", os.path.join(data_p
 print('val is downloaded')
 
 y_train_id = '1b0hoRWJte6Ng5OwnBpqF7FKE1nCTCjCT'
-X_train_id = '1uLkqCBmLzmiNOdTJEWzKeU5E4UYRsdZY'
+X_train_id = '1zuKDqZek3eck32DMLajjzKdRPd5qzMn3'
 gdown.download(f"https://drive.google.com/uc?id={y_train_id}", os.path.join(data_path, 'y_train.feather'))
 gdown.download(f"https://drive.google.com/uc?id={X_train_id}", os.path.join(data_path, 'X_train.feather'))
 print('train is downloaded')
