@@ -1,5 +1,6 @@
 import gdown
 import os
+import wget
 
 data_path = './data'
 os.makedirs(data_path, exist_ok=True)
