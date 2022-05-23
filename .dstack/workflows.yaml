@@ -1,9 +1,20 @@
 workflows:
+  - name: download-data
+    provider: python
+    version: 3.8
+    requirements: requirements_download_data.txt
+    python_script: dstack_download_data.py
+    artifacts:
+      - data
+
   - name: train-catboost
     provider: python
+    version: 3.8
     requirements: requirements.txt
-    python_script: catboost_ranker.py
+    python_script: dstack_catboost_ranker.py
+    depends-on:
+      - download-data
     artifacts:
-      - catboost_model
+      - outputs
     resources:
       gpu: ${{ gpu }}
