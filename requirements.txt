@@ -1,4 +1,4 @@
-pandas==1.2.4
+pandas==1.3.5
 ipywidgets
 plotly
 feature-engine
@@ -8,3 +8,5 @@ catboost
 shap
 pyarrow
 markupsafe==2.0.1
+scikit-optimize
+matplotlib

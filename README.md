@@ -25,15 +25,16 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 2. Correlation between adv and position
 
 ## Preprocessing
-1. Missing values. Catboost does a weird thing
-2. Outlier detection: look for outliers on city and country level when replacing them with mean per category 
-3. Add negative sampling for non-matched pairs
-4. Return shuffle split back to refresh the distrib from time to time
-5. Fill missing values with some historicals, competitors? 
-6. Fill missing prop_review_score, prop_location_score2, srch_query_affinity_score values with the worst case scenario?
-7. convert absolute percentage difference with competitor to the money difference (The absolute percentage difference 
+1. Down sampling negative instances improves training time and predictive performance
+2. Missing values. Catboost does a weird thing
+3. Outlier detection: look for outliers on city and country level when replacing them with mean per category 
+4. Add negative sampling for non-matched pairs
+5. Return shuffle split back to refresh the distrib from time to time
+6. Fill missing values with some historicals, competitors? 
+7. Fill missing prop_review_score, prop_location_score2, srch_query_affinity_score values with the worst case scenario?
+8. convert absolute percentage difference with competitor to the money difference (The absolute percentage difference 
 (if one exists) between Expedia and competitor N’s price (Expedia’s price the denominator))
-8. Price anomaly detection https://www.kaggle.com/code/nikitsoftweb/production-time-series-of-price-anomaly-detection/notebook
+9. Price anomaly detection https://www.kaggle.com/code/nikitsoftweb/production-time-series-of-price-anomaly-detection/notebook
 
 ## Features
 2. agg for prop_loc_score_2 have to be in bins (too many values) https://stackoverflow.com/questions/45273731/binning-a-column-with-python-pandas

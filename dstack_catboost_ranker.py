@@ -1,16 +1,22 @@
+import os
+import time
+import gc
+import json
+
 import catboost
 from catboost import CatBoostRanker, Pool, MetricVisualizer, cv
 import numpy as np
 import pandas as pd
 
-import os
-import gc
-import json
+import matplotlib.pyplot as plt
 
 import shap
 
-data_path = './data'
+################## PARAMS START ##################
+
+data_path = './data'  # should be created during data processing
 output_folder = './trained_models'
+os.makedirs(output_folder, exist_ok=True)
 
 cols_to_use = ['srch_id',
                'site_id',
@@ -367,11 +373,20 @@ CAT_FEATURES = ['srch_id',
                 'week_id',
                 'season_num', 'day', 'month', 'year', 'quarter', 'week', 'dow'
                 ]
-
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
 
 group_col = 'srch_id'
 predict_item_col = 'prop_id'
+
+TASK_TYPE = 'GPU'
+
+FIT_MODEL_NOT_LOAD = True
+TUNE_MODEL = True
+TOTAL_OPTIMIZE_STEPS = 2
+INITIAL_RANDOM_OPTIMIZE_STEPS = 1
+
+################## PARAMS END ##################
+################## DATA START ##################
 
 X_train = pd.read_feather(os.path.join(data_path, 'X_train.feather'), columns=cols_to_use)
 y_train = pd.read_feather(os.path.join(data_path, 'y_train.feather'))['target']
@@ -397,39 +412,126 @@ val_pool = Pool(data=X_val,
 # del X_val, y_val;
 gc.collect()
 
-params = {
-    "iterations": 7000,
-    'loss_function': 'YetiRankPairwise',  # YetiRank should be faster # hints=skip_train~false
-    #     'custom_metric': ['NDCG:top=5;type=Base;denominator=LogPosition;hints=skip_train~false'], # :
-    "verbose": False,
-    'early_stopping_rounds': 500,
-    'use_best_model': True,
-    #     'metric_period': 50,
-    "task_type": "GPU",
-}
 
-################## TUNING ##################
+################## DATA END ##################
 
-model = CatBoostRanker(**params)
-model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
 
-os.makedirs(output_folder, exist_ok=True)
-model.save_model(os.path.join(output_folder, 'catboost_model'))
+def get_default_model():
+    model = CatBoostRanker(iterations=7000,
+                           loss_function='YetiRankPairwise',  # YetiRank should be faster # hints=skip_train~false
+                           early_stopping_rounds=500,
+                           use_best_model=True,
+                           task_type=TASK_TYPE,
+                           #     'custom_metric': ['NDCG:top=5;type=Base;denominator=LogPosition;hints=skip_train~false'], # :
+                           )
+    return model
 
-################## EVAL ##################
+
+def save_model_params(model_params, path):
+    model_params_df = pd.DataFrame.from_dict(model_params, orient='index', columns=['param_value'])
+    model_params_df['param_value'] = model_params_df['param_value'].astype('str')
+    model_params_df.to_csv(path, index=False)
+
+
+################## TUNING START ##################
+
+if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
+    tuning_start_time = time.time()
+    from skopt import gp_minimize
+    from skopt.utils import use_named_args
+    from skopt.space import Real, Integer, Categorical
+
+    search_space = {
+        'depth': Integer(4, 8, prior='uniform', name='depth'),
+        'learning_rate': Real(0.001, 0.03, 'log-uniform', name='learning_rate'),
+        'loss_function': Categorical(categories=['YetiRankPairwise', 'YetiRank'], name='loss_function'),
+        'nan_mode': Categorical(categories=['Min', 'Max'], name='nan_mode'),
+        # On every iteration each possible split gets a score (for example,
+        # the score indicates how much adding this split will improve the
+        # loss function for the training dataset). The split with the highest
+        # score is selected. The scores have no randomness. A normally
+        # distributed random variable is added to the score of the feature.
+        # It has a zero mean and a variance that decreases during the training.
+        # The value of this parameter is the multiplier of the variance.
+        'random_strength': Real(1e-2, 20, 'log-uniform', name='random_strength'),
+        # too small value makes significant fluctuation
+        # 'bagging_temperature': Real(0.0, 5.0, name='bagging_temperature'),
+        'border_count': Integer(32, 255, name='border_count'),  # catboost recommends 32, 254
+        'l2_leaf_reg': Real(1e-2, 10.0, prior='log-uniform', name='l2_leaf_reg'),
+        # too small value makes significant fluctuation
+        # 'grow_policy': Categorical(categories=['SymmetricTree', 'Depthwise', 'Lossguide'], name='grow_policy'),
+        # Sample rate for bagging.
+        # 'subsample': Real(0.1, 1.0, prior='uniform', name='subsample'), for bootstrap_type == "Bernoulli"
+        'colsample_bylevel': Real(0.3, 1.0, name='colsample_bylevel'),
+        # 'one_hot_max_size': Integer(2, 25, name='one_hot_max_size'),
+        # 'langevin': Categorical(categories=[True, False], name='langevin'), # better with True
+        # 'boost_from_average': Categorical(categories=[True, False], name='boost_from_average'), FALSE FAILS EVERYTHING
+    }
+
+
+    # this decorator allows your objective function to receive a the parameters as
+    # keyword arguments. This is particularly convenient when you want to set
+    # scikit-learn estimator parameters
+    @use_named_args(list(search_space.values()))
+    def objective(**params):
+        model = get_default_model()
+        print('using params', params)
+        model.set_params(**params)
+
+        model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
+
+        return -model.eval_metrics(val_pool, 'NDCG:top=5;type=Base;denominator=LogPosition',
+                                   ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+
+
+    res_gp = gp_minimize(objective, list(search_space.values()),
+                         n_calls=TOTAL_OPTIMIZE_STEPS, n_initial_points=INITIAL_RANDOM_OPTIMIZE_STEPS,
+                         initial_point_generator='random',
+                         random_state=42, n_jobs=1, verbose=True)
+
+    best_params = {param_name: tuned_param for param_name, tuned_param in zip(search_space.keys(), res_gp.x)}
+    print('best_params', best_params)
+    save_model_params(best_params, os.path.join(output_folder, 'tuned_params_df.csv'))
+
+    from skopt.plots import plot_convergence
+    plot_convergence(res_gp)
+    plt.savefig(os.path.join(output_folder, 'convergence_plot.jpg'))
+
+################## TUNING END ##################
+################## EVAL START ##################
+
+if FIT_MODEL_NOT_LOAD:
+    print("Training on train and validating on validation")
+    model = get_default_model()
+    if TUNE_MODEL:
+        print("Using best params from tuned")
+        model.set_params(**best_params)
+    else:
+        print("Using default params")
+
+    model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
+    model.save_model(os.path.join(output_folder, 'catboost_model'))
+
+    model_val_params = model.get_all_params()
+    save_model_params(model_val_params, os.path.join(output_folder, 'model_params_on_val_df.csv'))
+else:
+    pass
+    # model = CatBoostRegressor()
+    # model.load_model(model_name, format='cbm')
+    # CAT_FEATURES = np.array(model.feature_names_)[model.get_cat_feature_indices()].tolist()
 
 metrics_dict = dict()
 metrics_dict['val_NDCG@5'] = model.eval_metrics(val_pool,
                                                 'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                ntree_start=model.tree_count_ - 1)
+                                                ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
 metrics_dict['train_NDCG@5'] = model.eval_metrics(train_pool,
                                                   'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                  ntree_start=model.tree_count_ - 1)
+                                                  ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-X_test = pd.read_feather(os.path.join('../Personalize-Expedia-Hotel-Searches/data/', 'X_test.feather'),
+X_test = pd.read_feather(os.path.join(data_path, 'X_test.feather'),
                          columns=cols_to_use)
-y_test = pd.read_feather(os.path.join('../Personalize-Expedia-Hotel-Searches/data/', 'y_test.feather'))['target']
+y_test = pd.read_feather(os.path.join(data_path, 'y_test.feather'))['target']
 print('X_test.shape', X_test.shape)
 test_pool = Pool(data=X_test,
                  label=y_test,
@@ -439,12 +541,14 @@ test_pool = Pool(data=X_test,
 
 metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
                                                  'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                 ntree_start=model.tree_count_ - 1)
+                                                 ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
+print('eval metrics', metrics_dict)
 with open(os.path.join(output_folder, 'ndcg_scores.json'), 'w') as fp:
-    json.dump(my_dict, fp)
+    json.dump(metrics_dict, fp)
 
-################## FEATURE IMPORTANCE ##################
+################## EVAL END ##################
+################## FEATURE IMPORTANCE START ##################
 
 
 explainer = shap.Explainer(model)
@@ -454,3 +558,40 @@ features = X_val.columns
 mean_shaps = np.abs(shap_values.values).mean(0)
 shaps_df = pd.DataFrame({'feature': features, 'shap': mean_shaps})
 shaps_df.to_csv(os.path.join(output_folder, 'shaps_df.csv'), index=False)
+
+################## FEATURE IMPORTANCE END ##################
+################## MODEL REFIT START ##################
+print("################## MODEL REFIT START ##################")
+
+train_val_pool = Pool(data=pd.concat([X_train, X_val], axis=0),
+                      label=pd.concat([y_train, y_val], axis=0),
+                      group_id=pd.concat([X_train, X_val], axis=0)[group_col],
+                      cat_features=CAT_FEATURES,
+                      )
+# del X_train, X_val, y_train, y_val;
+gc.collect()
+
+X_test = pd.read_feather(os.path.join(data_path, 'X_test.feather'), columns=cols_to_use)
+y_test = pd.read_feather(os.path.join(data_path, 'y_test.feather'))['target']
+test_pool = Pool(data=X_test,
+                 label=y_test,
+                 group_id=X_test[group_col],
+                 cat_features=CAT_FEATURES,
+                 )
+# del X_test, y_test;
+gc.collect()
+
+model = get_default_model()
+if TUNE_MODEL:
+    print("Using best params from tuned")
+    model.set_params(**best_params)
+else:
+    print("Using default params")
+
+model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
+model.save_model('catboost_model_train_val')
+
+model_val_params = model.get_all_params()
+save_model_params(model_val_params, os.path.join(output_folder, 'model_params_on_test_df.csv'))
+
+################## MODEL REFIT END ##################
