@@ -374,9 +374,11 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = False
-TOTAL_OPTIMIZE_STEPS = 10
+TUNE_MODEL = True
+TOTAL_OPTIMIZE_STEPS = 15
 INITIAL_RANDOM_OPTIMIZE_STEPS = 4
+TUNING_BOOSTING_ITERATIONS = 3000
+REGULAR_BOOSTING_ITERATIONS = 6000
 
 ################## PARAMS END ##################
 ################## DATA START ##################
@@ -416,9 +418,9 @@ test_pool = Pool(data=X_test,
 
 def get_default_model(tuning=False):
     if tuning:
-        iterations = 4000
+        iterations = TUNING_BOOSTING_ITERATIONS
     else:
-        iterations = 6000
+        iterations = REGULAR_BOOSTING_ITERATIONS
     model = CatBoostRanker(iterations=iterations,
                            loss_function='YetiRankPairwise',  # YetiRank should be faster # hints=skip_train~false
                            early_stopping_rounds=500,
@@ -464,7 +466,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
         # 'grow_policy': Categorical(categories=['SymmetricTree', 'Depthwise', 'Lossguide'], name='grow_policy'),
         # Sample rate for bagging.
         # 'subsample': Real(0.1, 1.0, prior='uniform', name='subsample'), for bootstrap_type == "Bernoulli"
-        'colsample_bylevel': Real(0.3, 1.0, name='colsample_bylevel'),
+        # 'colsample_bylevel': Real(0.3, 1.0, name='colsample_bylevel'),  # aka RMS
         # 'one_hot_max_size': Integer(2, 25, name='one_hot_max_size'),
         # 'langevin': Categorical(categories=[True, False], name='langevin'), # better with True
         # 'boost_from_average': Categorical(categories=[True, False], name='boost_from_average'), FALSE FAILS EVERYTHING
