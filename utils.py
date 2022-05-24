@@ -1,3 +1,5 @@
+import itertools
+
 from metrics import ndcg
 import pandas as pd
 
@@ -47,3 +49,7 @@ def predict_in_format(model, data, pool, group_col, predict_item_col, gt_col=Non
         print('Local test NDCG@5:', ndcg_score)
 
     return values_df
+
+
+def flatten_list(ls):
+    return list(itertools.chain.from_iterable(ls))
