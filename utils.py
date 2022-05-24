@@ -53,3 +53,16 @@ def predict_in_format(model, data, pool, group_col, predict_item_col, gt_col=Non
 
 def flatten_list(ls):
     return list(itertools.chain.from_iterable(ls))
+
+
+# use locally or if you added the sample subm file to the dataset
+def validate_submission(subm_sample_path, our_subm_path, group_col):
+    subm_sample = pd.read_csv(subm_sample_path)
+    our_subm = pd.read_csv(our_subm_path)
+
+    assert subm_sample.shape == our_subm.shape
+    assert our_subm[group_col].equals(subm_sample[group_col])
+    assert our_subm.index.equals(subm_sample.index)
+    assert subm_sample.groupby(group_col)['prop_id'].apply(len).to_frame().equals(
+        our_subm.groupby(group_col)['prop_id'].apply(len).to_frame())
+    print('everything is ok to submit')

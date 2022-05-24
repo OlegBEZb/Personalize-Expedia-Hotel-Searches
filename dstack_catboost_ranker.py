@@ -6,6 +6,7 @@ import json
 from catboost import CatBoostRanker, Pool
 import numpy as np
 import pandas as pd
+from skopt import dump
 
 import matplotlib.pyplot as plt
 
@@ -30,16 +31,26 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = False
+TUNE_MODEL = True
 TOTAL_OPTIMIZE_STEPS = 10
 INITIAL_RANDOM_OPTIMIZE_STEPS = 4
-TUNING_BOOSTING_ITERATIONS = 3000
+TUNING_BOOSTING_ITERATIONS = 4000
 REGULAR_BOOSTING_ITERATIONS = 8000
 
 ################## PARAMS END ##################
 ################## DATA START ##################
 
+def prepare_cats(df):
+    CAT_FILLNA = 'NaN_category'
+    for cat_col in CAT_FEATURES:
+        df[cat_col] = df[cat_col].astype('category')
+        if CAT_FILLNA not in df[cat_col].cat.categories:# and cat_col not in int2str2cat_cols:
+            df[cat_col] = df[cat_col].cat.add_categories(CAT_FILLNA)
+            df[cat_col] = df[cat_col].fillna(CAT_FILLNA)
+
+
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
+prepare_cats(X_train)
 y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
 print('X_train.shape', X_train.shape)
 
@@ -50,6 +61,7 @@ train_pool = Pool(data=X_train,
                   )
 
 X_val = pd.read_feather(os.path.join(DATA_PATH, 'X_val.feather'), columns=cols_to_use)
+prepare_cats(X_val)
 y_val = pd.read_feather(os.path.join(DATA_PATH, 'y_val.feather'))['target']
 print('X_val.shape', X_val.shape)
 
@@ -60,6 +72,7 @@ val_pool = Pool(data=X_val,
                 )
 
 X_test = pd.read_feather(os.path.join(DATA_PATH, 'X_test.feather'), columns=cols_to_use)
+prepare_cats(X_test)
 y_test = pd.read_feather(os.path.join(DATA_PATH, 'y_test.feather'))['target']
 print('X_test.shape', X_test.shape)
 test_pool = Pool(data=X_test,
@@ -154,6 +167,10 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     # with open(os.path.join(OUTPUT_FOLDER, 'tuned_params.json'), 'w') as fp:
     #     json.dump(best_params, fp)
     save_model_params(best_params, os.path.join(OUTPUT_FOLDER, 'tuned_params_df.csv'))
+    try:
+        dump(res_gp, os.path.join(OUTPUT_FOLDER, 'skopt_results.pkl'))
+    except:
+        pass
 
     from skopt.plots import plot_convergence
 
