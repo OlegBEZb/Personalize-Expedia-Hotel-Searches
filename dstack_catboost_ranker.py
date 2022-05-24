@@ -42,7 +42,7 @@ REGULAR_BOOSTING_ITERATIONS = 9000
 ################## DATA START ##################
 
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
-prepare_cats(X_train)
+prepare_cats(X_train, CAT_FEATURES)
 y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
 print('X_train.shape', X_train.shape)
 
@@ -53,7 +53,7 @@ train_pool = Pool(data=X_train,
                   )
 
 X_val = pd.read_feather(os.path.join(DATA_PATH, 'X_val.feather'), columns=cols_to_use)
-prepare_cats(X_val)
+prepare_cats(X_val, CAT_FEATURES)
 y_val = pd.read_feather(os.path.join(DATA_PATH, 'y_val.feather'))['target']
 print('X_val.shape', X_val.shape)
 
@@ -64,7 +64,7 @@ val_pool = Pool(data=X_val,
                 )
 
 X_test = pd.read_feather(os.path.join(DATA_PATH, 'X_test.feather'), columns=cols_to_use)
-prepare_cats(X_test)
+prepare_cats(X_test, CAT_FEATURES)
 y_test = pd.read_feather(os.path.join(DATA_PATH, 'y_test.feather'))['target']
 print('X_test.shape', X_test.shape)
 test_pool = Pool(data=X_test,
