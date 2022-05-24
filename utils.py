@@ -1,9 +1,8 @@
 import itertools
+import pandas as pd
+from sklearn.model_selection import train_test_split
 
 from metrics import ndcg
-import pandas as pd
-
-from sklearn.model_selection import train_test_split
 
 
 def train_test_group_split(*arrays,
@@ -51,8 +50,8 @@ def predict_in_format(model, data, pool, group_col, predict_item_col, gt_col=Non
     return values_df
 
 
-def flatten_list(ls):
-    return list(itertools.chain.from_iterable(ls))
+def flatten_list(input_list):
+    return list(itertools.chain.from_iterable(input_list))
 
 
 # use locally or if you added the sample subm file to the dataset
@@ -66,3 +65,12 @@ def validate_submission(subm_sample_path, our_subm_path, group_col):
     assert subm_sample.groupby(group_col)['prop_id'].apply(len).to_frame().equals(
         our_subm.groupby(group_col)['prop_id'].apply(len).to_frame())
     print('everything is ok to submit')
+
+
+def prepare_cats(df, CAT_FEATURES, CAT_FILLNA='NaN_category'):
+    CAT_FILLNA = 'NaN_category'
+    for cat_col in CAT_FEATURES:
+        df[cat_col] = df[cat_col].astype('category')
+        if CAT_FILLNA not in df[cat_col].cat.categories:  # and cat_col not in int2str2cat_cols:
+            df[cat_col] = df[cat_col].cat.add_categories(CAT_FILLNA)
+            df[cat_col] = df[cat_col].fillna(CAT_FILLNA)

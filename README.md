@@ -73,10 +73,8 @@ learned “embeddings” using latent factor models may add significant value to
 5. Train model on train+val combined 
 6. try classification once again
       1. Random forest
-      2. Extreme trees 
-7. skopt for catboost (on 3k epochs would be fine to understand the potential?)
-8. Catboost split evaluation into batches and avg
-9. Run CatBoost on local CPU with 400 features for night
+      2. Extreme trees
+7. Catboost split evaluation into batches and avg
 
 ## Unsorted backlog
 1. use position as a feature but ONLY when random is False 
@@ -167,7 +165,15 @@ Public LB: 0.40694
 17th submission.
 Trained on train + val, stopped on test. NOT ALLOWED TO ANALYSE, JUST TO CHECK THE BOOST FROM THE TRICK
 Public LB: 0.40920
-14. 
+14. 24.05.2022
+Trained on 400 features. 8000 epochs. Fair metrics:
+"val_NDCG@5": 0.40318595229960297,
+"train_NDCG@5": 0.45839115000448594,
+"test_NDCG@5": 0.39889310524098376
+Retrained on train+val. Public score: 0.40845
+15. 24.05.2022
+Blending of 18th and 19th submissions. weight 0.65 for catboost and 0.35 for lgbm. Public score: 0.40878
+16. 
 
 # Open questions
 

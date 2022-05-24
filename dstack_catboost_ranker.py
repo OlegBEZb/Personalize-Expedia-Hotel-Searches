@@ -14,6 +14,7 @@ import shap
 
 from features_dict import features, CAT_FEATURES
 from utils import flatten_list
+from utils import prepare_cats
 
 ################## PARAMS START ##################
 
@@ -39,15 +40,6 @@ REGULAR_BOOSTING_ITERATIONS = 8000
 
 ################## PARAMS END ##################
 ################## DATA START ##################
-
-def prepare_cats(df):
-    CAT_FILLNA = 'NaN_category'
-    for cat_col in CAT_FEATURES:
-        df[cat_col] = df[cat_col].astype('category')
-        if CAT_FILLNA not in df[cat_col].cat.categories:# and cat_col not in int2str2cat_cols:
-            df[cat_col] = df[cat_col].cat.add_categories(CAT_FILLNA)
-            df[cat_col] = df[cat_col].fillna(CAT_FILLNA)
-
 
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
 prepare_cats(X_train)
