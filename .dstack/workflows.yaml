@@ -13,7 +13,7 @@ workflows:
     requirements: requirements.txt
     python_script: dstack_catboost_ranker.py
     depends-on:
-      - download-data
+      - download-data: train_val_test
     artifacts:
       - outputs
     resources:
