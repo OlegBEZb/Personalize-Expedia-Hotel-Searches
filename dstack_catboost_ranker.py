@@ -316,29 +316,29 @@ cols_to_use = [
     'min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'sum_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'price_per_day_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'price_per_day_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'price_per_day_rel_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_rel_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_rel_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'prop_historical_price_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'prop_historical_price_rel_diff_to_mean_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'price_per_day_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'price_per_day_rel_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_rel_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'prop_historical_price_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'price_per_day_rel_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_rel_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'prop_historical_price_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'prop_historical_price_rel_diff_to_median_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'price_per_day_diff_to_min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_diff_to_min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_rel_diff_to_min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_diff_to_min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_rel_diff_to_min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'prop_historical_price_diff_to_min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'prop_historical_price_rel_diff_to_min_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'price_per_day_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'price_per_day_rel_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'visitor_hist_adr_usd_rel_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'visitor_hist_adr_usd_rel_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'prop_historical_price_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
-    'prop_historical_price_rel_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
+    # 'prop_historical_price_rel_diff_to_max_price_per_day_per_trip_start_date_month_per_srch_destination_id',
     'mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score',
     'median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score',
     'min_price_per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score',
@@ -374,7 +374,7 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = True
+TUNE_MODEL = False
 TOTAL_OPTIMIZE_STEPS = 10
 INITIAL_RANDOM_OPTIMIZE_STEPS = 4
 
@@ -514,7 +514,7 @@ if FIT_MODEL_NOT_LOAD:
         print("Using default params")
 
     model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
-    model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model'))
+    model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train'))
 
     model_val_params = model.get_all_params()
     with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_stopped_on_val.json'), 'w') as fp:
@@ -572,7 +572,7 @@ else:
     print("Using default params")
 
 model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
-model.save_model('catboost_model_train_val')
+model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train_val'))
 
 model_test_params = model.get_all_params()
 with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
