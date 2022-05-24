@@ -3,8 +3,7 @@ import time
 import gc
 import json
 
-import catboost
-from catboost import CatBoostRanker, Pool, MetricVisualizer, cv
+from catboost import CatBoostRanker, Pool
 import numpy as np
 import pandas as pd
 
@@ -14,9 +13,9 @@ import shap
 
 ################## PARAMS START ##################
 
-data_path = './data'  # should be created during data processing
-output_folder = './trained_models'
-os.makedirs(output_folder, exist_ok=True)
+DATA_PATH = './data'  # should be created during data processing
+OUTPUT_FOLDER = './trained_models'
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 cols_to_use = ['srch_id',
                'site_id',
@@ -375,8 +374,8 @@ CAT_FEATURES = ['srch_id',
                 ]
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
 
-group_col = 'srch_id'
-predict_item_col = 'prop_id'
+GROUP_COL = 'srch_id'
+PREDICT_ITEM_COL = 'prop_id'
 
 TASK_TYPE = 'GPU'
 
@@ -388,25 +387,25 @@ INITIAL_RANDOM_OPTIMIZE_STEPS = 1
 ################## PARAMS END ##################
 ################## DATA START ##################
 
-X_train = pd.read_feather(os.path.join(data_path, 'X_train.feather'), columns=cols_to_use)
-y_train = pd.read_feather(os.path.join(data_path, 'y_train.feather'))['target']
+X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
+y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
 print('X_train.shape', X_train.shape)
 
 train_pool = Pool(data=X_train,
                   label=y_train,
-                  group_id=X_train[group_col],
+                  group_id=X_train[GROUP_COL],
                   cat_features=CAT_FEATURES,
                   )
 # del X_train, y_train;
 gc.collect()
 
-X_val = pd.read_feather(os.path.join(data_path, 'X_val.feather'), columns=cols_to_use)
-y_val = pd.read_feather(os.path.join(data_path, 'y_val.feather'))['target']
+X_val = pd.read_feather(os.path.join(DATA_PATH, 'X_val.feather'), columns=cols_to_use)
+y_val = pd.read_feather(os.path.join(DATA_PATH, 'y_val.feather'))['target']
 print('X_val.shape', X_val.shape)
 
 val_pool = Pool(data=X_val,
                 label=y_val,
-                group_id=X_val[group_col],
+                group_id=X_val[GROUP_COL],
                 cat_features=CAT_FEATURES,
                 )
 # del X_val, y_val;
@@ -491,11 +490,11 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
 
     best_params = {param_name: tuned_param for param_name, tuned_param in zip(search_space.keys(), res_gp.x)}
     print('best_params', best_params)
-    save_model_params(best_params, os.path.join(output_folder, 'tuned_params_df.csv'))
+    save_model_params(best_params, os.path.join(OUTPUT_FOLDER, 'tuned_params_df.csv'))
 
     from skopt.plots import plot_convergence
     plot_convergence(res_gp)
-    plt.savefig(os.path.join(output_folder, 'convergence_plot.jpg'))
+    plt.savefig(os.path.join(OUTPUT_FOLDER, 'convergence_plot.jpg'))
 
 ################## TUNING END ##################
 ################## EVAL START ##################
@@ -510,10 +509,10 @@ if FIT_MODEL_NOT_LOAD:
         print("Using default params")
 
     model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
-    model.save_model(os.path.join(output_folder, 'catboost_model'))
+    model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model'))
 
     model_val_params = model.get_all_params()
-    save_model_params(model_val_params, os.path.join(output_folder, 'model_params_on_val_df.csv'))
+    save_model_params(model_val_params, os.path.join(OUTPUT_FOLDER, 'model_params_on_val_df.csv'))
 else:
     pass
     # model = CatBoostRegressor()
@@ -529,13 +528,13 @@ metrics_dict['train_NDCG@5'] = model.eval_metrics(train_pool,
                                                   'NDCG:top=5;type=Base;denominator=LogPosition',
                                                   ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-X_test = pd.read_feather(os.path.join(data_path, 'X_test.feather'),
+X_test = pd.read_feather(os.path.join(DATA_PATH, 'X_test.feather'),
                          columns=cols_to_use)
-y_test = pd.read_feather(os.path.join(data_path, 'y_test.feather'))['target']
+y_test = pd.read_feather(os.path.join(DATA_PATH, 'y_test.feather'))['target']
 print('X_test.shape', X_test.shape)
 test_pool = Pool(data=X_test,
                  label=y_test,
-                 group_id=X_test[group_col],
+                 group_id=X_test[GROUP_COL],
                  cat_features=CAT_FEATURES,
                  )
 
@@ -544,7 +543,7 @@ metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
                                                  ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
 print('eval metrics', metrics_dict)
-with open(os.path.join(output_folder, 'ndcg_scores.json'), 'w') as fp:
+with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores.json'), 'w') as fp:
     json.dump(metrics_dict, fp)
 
 ################## EVAL END ##################
@@ -557,7 +556,7 @@ shap_values = explainer(val_pool)  # X_val or val_pool
 features = X_val.columns
 mean_shaps = np.abs(shap_values.values).mean(0)
 shaps_df = pd.DataFrame({'feature': features, 'shap': mean_shaps})
-shaps_df.to_csv(os.path.join(output_folder, 'shaps_df.csv'), index=False)
+shaps_df.to_csv(os.path.join(OUTPUT_FOLDER, 'shaps_df.csv'), index=False)
 
 ################## FEATURE IMPORTANCE END ##################
 ################## MODEL REFIT START ##################
@@ -565,17 +564,17 @@ print("################## MODEL REFIT START ##################")
 
 train_val_pool = Pool(data=pd.concat([X_train, X_val], axis=0),
                       label=pd.concat([y_train, y_val], axis=0),
-                      group_id=pd.concat([X_train, X_val], axis=0)[group_col],
+                      group_id=pd.concat([X_train, X_val], axis=0)[GROUP_COL],
                       cat_features=CAT_FEATURES,
                       )
 # del X_train, X_val, y_train, y_val;
 gc.collect()
 
-X_test = pd.read_feather(os.path.join(data_path, 'X_test.feather'), columns=cols_to_use)
-y_test = pd.read_feather(os.path.join(data_path, 'y_test.feather'))['target']
+X_test = pd.read_feather(os.path.join(DATA_PATH, 'X_test.feather'), columns=cols_to_use)
+y_test = pd.read_feather(os.path.join(DATA_PATH, 'y_test.feather'))['target']
 test_pool = Pool(data=X_test,
                  label=y_test,
-                 group_id=X_test[group_col],
+                 group_id=X_test[GROUP_COL],
                  cat_features=CAT_FEATURES,
                  )
 # del X_test, y_test;
@@ -592,6 +591,6 @@ model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
 model.save_model('catboost_model_train_val')
 
 model_val_params = model.get_all_params()
-save_model_params(model_val_params, os.path.join(output_folder, 'model_params_on_test_df.csv'))
+save_model_params(model_val_params, os.path.join(OUTPUT_FOLDER, 'model_params_on_test_df.csv'))
 
 ################## MODEL REFIT END ##################
