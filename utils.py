@@ -67,10 +67,10 @@ def validate_submission(subm_sample_path, our_subm_path, group_col):
     print('everything is ok to submit')
 
 
-def prepare_cats(df, CAT_FEATURES, CAT_FILLNA='NaN_category'):
-    CAT_FILLNA = 'NaN_category'
-    for cat_col in CAT_FEATURES:
-        df[cat_col] = df[cat_col].astype('category')
-        if CAT_FILLNA not in df[cat_col].cat.categories:  # and cat_col not in int2str2cat_cols:
-            df[cat_col] = df[cat_col].cat.add_categories(CAT_FILLNA)
-            df[cat_col] = df[cat_col].fillna(CAT_FILLNA)
+def prepare_cats(pd_df: pd.DataFrame, cat_features, cat_fillna_value='NaN_category'):
+    cat_fillna_value = 'NaN_category'
+    for cat_col in cat_features:
+        pd_df[cat_col] = pd_df[cat_col].astype('category')
+        if cat_fillna_value not in pd_df[cat_col].cat.categories:  # and cat_col not in int2str2cat_cols:
+            pd_df[cat_col] = pd_df[cat_col].cat.add_categories(cat_fillna_value)
+            pd_df[cat_col] = pd_df[cat_col].fillna(cat_fillna_value)
