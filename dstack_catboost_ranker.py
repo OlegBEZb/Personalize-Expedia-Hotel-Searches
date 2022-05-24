@@ -14,7 +14,7 @@ import shap
 ################## PARAMS START ##################
 
 DATA_PATH = './data'  # should be created during data processing
-OUTPUT_FOLDER = './trained_models'
+OUTPUT_FOLDER = './outputs'
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 cols_to_use = ['srch_id',
