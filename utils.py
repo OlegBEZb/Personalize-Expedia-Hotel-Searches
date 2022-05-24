@@ -1,6 +1,7 @@
-from sklearn.model_selection import train_test_split
 from metrics import ndcg
 import pandas as pd
+
+from sklearn.model_selection import train_test_split
 
 
 def train_test_group_split(*arrays,
