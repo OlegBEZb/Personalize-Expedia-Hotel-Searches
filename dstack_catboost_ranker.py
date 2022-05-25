@@ -36,7 +36,7 @@ TUNE_MODEL = False
 TOTAL_OPTIMIZE_STEPS = 10
 INITIAL_RANDOM_OPTIMIZE_STEPS = 4
 TUNING_BOOSTING_ITERATIONS = 4000
-REGULAR_BOOSTING_ITERATIONS = 9000
+REGULAR_BOOSTING_ITERATIONS = 6000
 
 ################## PARAMS END ##################
 ################## DATA START ##################
@@ -160,12 +160,16 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     #     json.dump(best_params, fp)
     save_model_params(best_params, os.path.join(OUTPUT_FOLDER, 'tuned_params_df.csv'))
     try:
-        dump(res_gp, os.path.join(OUTPUT_FOLDER, 'skopt_results.pkl'))
+        dump(res_gp, os.path.join(OUTPUT_FOLDER, 'skopt_results.pkl'), store_objective=False)
+        from skopt.plots import plot_objective, plot_evaluations
+        plot_objective(res_gp)
+        plt.savefig(os.path.join(OUTPUT_FOLDER, 'objective_plot.jpg'))
+        plot_evaluations(res_gp)
+        plt.savefig(os.path.join(OUTPUT_FOLDER, 'evaluations_plot.jpg'))
     except:
         pass
 
     from skopt.plots import plot_convergence
-
     plot_convergence(res_gp)
     plt.savefig(os.path.join(OUTPUT_FOLDER, 'convergence_plot.jpg'))
 
@@ -185,6 +189,7 @@ if FIT_MODEL_NOT_LOAD:
     model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train'))
 
     model_val_params = model.get_all_params()
+    model_val_params['tree_count'] = model.tree_count_
     with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_stopped_on_val.json'), 'w') as fp:
         json.dump(model_val_params, fp)
 else:
@@ -243,6 +248,7 @@ model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
 model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train_val'))
 
 model_test_params = model.get_all_params()
+model_test_params['tree_count'] = model.tree_count_
 with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
     json.dump(model_test_params, fp)
 
