@@ -7,6 +7,7 @@ from catboost import CatBoostRanker, Pool
 import numpy as np
 import pandas as pd
 from skopt import dump
+from skopt.plots import plot_convergence, plot_objective, plot_evaluations
 
 import matplotlib.pyplot as plt
 
@@ -33,8 +34,8 @@ TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
 TUNE_MODEL = True
-TOTAL_OPTIMIZE_STEPS = 10
-INITIAL_RANDOM_OPTIMIZE_STEPS = 4
+TOTAL_OPTIMIZE_STEPS = 4
+INITIAL_RANDOM_OPTIMIZE_STEPS = 2
 TUNING_BOOSTING_ITERATIONS = 5000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
@@ -108,7 +109,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
 
     search_space = {
         'depth': Integer(4, 8, prior='uniform', name='depth'),
-        'learning_rate': Real(0.01, 0.05, 'uniform', name='learning_rate'),
+        'learning_rate': Real(0.02, 0.07, 'uniform', name='learning_rate'),
         'loss_function': Categorical(categories=['YetiRankPairwise', 'YetiRank'], name='loss_function'),
         'nan_mode': Categorical(categories=['Min', 'Max'], name='nan_mode'),
         # On every iteration each possible split gets a score (for example,
@@ -118,7 +119,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
         # distributed random variable is added to the score of the feature.
         # It has a zero mean and a variance that decreases during the training.
         # The value of this parameter is the multiplier of the variance.
-        'random_strength': Real(1e-2, 20, 'log-uniform', name='random_strength'),
+        # 'random_strength': Real(1e-2, 20, 'log-uniform', name='random_strength'),
         # too small value makes significant fluctuation
         # 'bagging_temperature': Real(0.0, 5.0, name='bagging_temperature'),
         'border_count': Integer(32, 64, name='border_count'),  # catboost recommends 32, 254
@@ -164,15 +165,16 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     except:
         pass
 
-    from skopt.plots import plot_convergence, plot_objective, plot_evaluations
     plot_objective(res_gp)
     plt.show()
     plt.savefig(os.path.join(OUTPUT_FOLDER, 'objective_plot.jpg'))
 
+    plt.clf()
     plot_evaluations(res_gp)
     plt.show()
     plt.savefig(os.path.join(OUTPUT_FOLDER, 'evaluations_plot.jpg'))
 
+    plt.clf()
     plot_convergence(res_gp)
     plt.show()
     plt.savefig(os.path.join(OUTPUT_FOLDER, 'convergence_plot.jpg'))
