@@ -44,14 +44,14 @@ def get_time_features(pdf: pd.DataFrame, time_col, prefix=None, within_hour_feat
 
     if season_features:
         pdf[prefix + 'quarter'] = pdf[time_col].dt.quarter.astype(np.int8)
-        pdf[prefix + 'is_quarter_start'] = pdf[time_col].dt.is_quarter_start.astype(np.int8)
-        pdf[prefix + 'is_quarter_end'] = pdf[time_col].dt.is_quarter_end.astype(np.int8)
+        # pdf[prefix + 'is_quarter_start'] = pdf[time_col].dt.is_quarter_start.astype(np.int8)
+        # pdf[prefix + 'is_quarter_end'] = pdf[time_col].dt.is_quarter_end.astype(np.int8)
         pdf[prefix + 'season_num'] = (((pdf[prefix + 'month']) // 3) % 4 + 1).astype(np.int8)
 
     if year_features:
         pdf[prefix + 'year'] = pdf[time_col].dt.year.astype(np.int16)
-        pdf[prefix + 'is_year_start'] = pdf[time_col].dt.is_year_start.astype(np.int8)
-        pdf[prefix + 'is_year_end'] = pdf[time_col].dt.is_year_end.astype(np.int8)
+        # pdf[prefix + 'is_year_start'] = pdf[time_col].dt.is_year_start.astype(np.int8)
+        # pdf[prefix + 'is_year_end'] = pdf[time_col].dt.is_year_end.astype(np.int8)
 
     def get_week_id(a_year, a_month, a_week):
         y = a_year
