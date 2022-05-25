@@ -35,7 +35,7 @@ FIT_MODEL_NOT_LOAD = True
 TUNE_MODEL = True
 TOTAL_OPTIMIZE_STEPS = 3
 INITIAL_RANDOM_OPTIMIZE_STEPS = 1
-TUNING_BOOSTING_ITERATIONS = 4000
+TUNING_BOOSTING_ITERATIONS = 5000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
 ################## PARAMS END ##################
@@ -108,7 +108,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
 
     search_space = {
         'depth': Integer(4, 8, prior='uniform', name='depth'),
-        'learning_rate': Real(0.001, 0.03, 'log-uniform', name='learning_rate'),
+        'learning_rate': Real(0.01, 0.05, 'uniform', name='learning_rate'),
         'loss_function': Categorical(categories=['YetiRankPairwise', 'YetiRank'], name='loss_function'),
         'nan_mode': Categorical(categories=['Min', 'Max'], name='nan_mode'),
         # On every iteration each possible split gets a score (for example,
@@ -161,16 +161,20 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     save_model_params(best_params, os.path.join(OUTPUT_FOLDER, 'tuned_params_df.csv'))
     try:
         dump(res_gp, os.path.join(OUTPUT_FOLDER, 'skopt_results.pkl'), store_objective=False)
-        from skopt.plots import plot_objective, plot_evaluations
-        plot_objective(res_gp)
-        plt.savefig(os.path.join(OUTPUT_FOLDER, 'objective_plot.jpg'))
-        plot_evaluations(res_gp)
-        plt.savefig(os.path.join(OUTPUT_FOLDER, 'evaluations_plot.jpg'))
     except:
         pass
 
-    from skopt.plots import plot_convergence
+    from skopt.plots import plot_convergence, plot_objective, plot_evaluations
+    plot_objective(res_gp)
+    plt.show()
+    plt.savefig(os.path.join(OUTPUT_FOLDER, 'objective_plot.jpg'))
+
+    plot_evaluations(res_gp)
+    plt.show()
+    plt.savefig(os.path.join(OUTPUT_FOLDER, 'evaluations_plot.jpg'))
+
     plot_convergence(res_gp)
+    plt.show()
     plt.savefig(os.path.join(OUTPUT_FOLDER, 'convergence_plot.jpg'))
 
 ################## TUNING END ##################
