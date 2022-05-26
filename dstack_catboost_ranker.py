@@ -34,7 +34,7 @@ FIT_MODEL_NOT_LOAD = True
 TUNE_MODEL = True
 TOTAL_OPTIMIZE_STEPS = 5
 INITIAL_RANDOM_OPTIMIZE_STEPS = 3
-TUNING_BOOSTING_ITERATIONS = 5000
+TUNING_BOOSTING_ITERATIONS = 4500
 REGULAR_BOOSTING_ITERATIONS = 6000
 
 ################## PARAMS END ##################
@@ -109,7 +109,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
 
     search_space = {
         'depth': Integer(5, 8, prior='uniform', name='depth'),
-        'learning_rate': Real(0.03, 0.3, 'uniform', name='learning_rate'),
+        'learning_rate': Real(0.04, 0.2, 'uniform', name='learning_rate'),
         'loss_function': Categorical(categories=['YetiRankPairwise', 'YetiRank'], name='loss_function'),
         'nan_mode': Categorical(categories=['Min', 'Max'], name='nan_mode'),
         # On every iteration each possible split gets a score (for example,
