@@ -18,3 +18,15 @@ workflows:
       - outputs
     resources:
       gpu: ${{ gpu }}
+
+  - name: preprocess-data
+    provider: python
+    version: 3.8
+    requirements: requirements.txt
+    python_script: Preprocessing.py
+    depends-on:
+      - raw_data:latest
+    artifacts:
+      - data
+    resources:
+      gpu: ${{ gpu }}
