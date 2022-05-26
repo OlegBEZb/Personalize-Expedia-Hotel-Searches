@@ -40,7 +40,7 @@ from utils import get_target
 # In[4]:
 
 
-USE_FULL = False
+USE_FULL = True
 
 data_path = 'data'
 raw_data_path = 'raw_data'
