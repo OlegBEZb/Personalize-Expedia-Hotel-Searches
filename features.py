@@ -1,3 +1,6 @@
+import gc
+from copy import deepcopy
+
 import numpy as np
 import pandas as pd
 from pandarallel import pandarallel
@@ -85,4 +88,83 @@ def num_transformations(df, cols, powers=[0.33, 0.5, 2, 3], log_bases=[2, 10, np
 
         if do_exp and all(df[c] < 10):
             df[c + '_exp'] = np.exp(df[c])
+    return df
+
+
+def normalize_features(input_df: pd.DataFrame, group_key, target_column, take_log10=False):
+    input_df = input_df.copy(deep=True)
+    # for numerical stability
+    if take_log10:
+        input_df[target_column + '_log10'] = np.log10(input_df[target_column] + 1e-2)
+        target_column += '_log10'
+
+    aggregations = ["mean", "std"]
+    df = input_df.groupby(group_key)[target_column].agg(aggregations)
+    col = {}
+    for agg in aggregations:
+        col[agg] = target_column + "_" + agg
+    df.rename(columns=col, inplace=True)
+
+    df_merge = input_df.merge(df.reset_index(), on=group_key)
+
+    suffix = "_norm_by_" + group_key
+    df_merge[target_column + suffix] = (df_merge[target_column] -
+                                        df_merge[target_column + "_mean"]) \
+                                       / df_merge[target_column + "_std"]
+    cols_to_drop = list(col.values())
+    if take_log10:
+        cols_to_drop.append(target_column)
+    df_merge = df_merge.drop(labels=cols_to_drop, axis=1)
+
+    del input_df
+    gc.collect()
+    return df_merge
+
+
+def create_composite_features(input_df: pd.DataFrame, groupby_cols, feature_value_col: str,
+                              agg_methods=["mean", "median", "min", "max"],
+                              relative_diff=True,
+                              comparison_cols=[], ):
+    input_df = input_df.copy(deep=True)
+
+    grp = input_df.groupby(groupby_cols)
+    print(f'{grp.ngroups} groups when aggregation by {groupby_cols}')
+    new_feature_df = grp[feature_value_col].agg(agg_methods)
+
+    name_mapping = {meth: meth + '_' + feature_value_col + '_per_' + '_per_'.join(groupby_cols)
+                    for meth in agg_methods}
+    new_feature_df.rename(columns=name_mapping, inplace=True)
+
+    input_df = input_df.join(new_feature_df, on=groupby_cols, how='left')
+
+    for new_feature_name in [c for c in list(name_mapping.values()) if not c.startswith('sum_')]:
+        input_df[feature_value_col + '_diff_to_' + new_feature_name] = input_df[feature_value_col] - input_df[
+            new_feature_name]
+        if relative_diff:
+            input_df[feature_value_col + '_rel_diff_to_' + new_feature_name] = (input_df[feature_value_col] - input_df[
+                new_feature_name]) / (input_df[feature_value_col] + 1e-2)
+
+        for comparison_col in [c for c in input_df.columns if c in comparison_cols]:
+            input_df[comparison_col + '_diff_to_' + new_feature_name] = input_df[comparison_col] - input_df[
+                new_feature_name]
+            if relative_diff:
+                input_df[comparison_col + '_rel_diff_to_' + new_feature_name] = (input_df[comparison_col] - input_df[
+                    new_feature_name]) / (input_df[feature_value_col] + 1e-2)
+
+    gc.collect()
+    return input_df
+
+
+# optimize with masks?
+def apply_composite_for_splits(df, split_cols=['train', 'val', 'test', 'subm'],
+                               **composite_kwargs):
+    if split_cols is None:
+        df = create_composite_features(df, **composite_kwargs)
+    else:
+        df_list = []
+        for split_col in split_cols:
+            split_df_enriched = create_composite_features(df[df[split_col]], **composite_kwargs)
+            df_list.append(split_df_enriched)
+        df = pd.concat(df_list, axis=0)
+
     return df

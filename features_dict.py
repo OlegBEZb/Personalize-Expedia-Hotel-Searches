@@ -775,7 +775,7 @@ CAT_FEATURES = ['srch_id',
                 'prop_country_id',
                 'prop_id',
                 'srch_destination_id',
-                # 'week_id',
+                'week_id',
                 'trip_start_date_week',
                 'trip_start_date_week_mid_summer_index',
                 'trip_start_date_week_id',
@@ -792,3 +792,11 @@ CAT_FEATURES = ['srch_id',
                 'holiday_during_trip',
                 'holiday_during_booking'
                 ]
+
+BOOL_COLS = ['prop_brand_bool',
+             'promotion_flag',
+             'srch_saturday_night_bool',
+             'random_bool',
+             'was_sold_in_that_period', 'trans_ocean',
+             'travel_inside', 'business_trip',
+             'separate_children_room']

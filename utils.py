@@ -1,4 +1,5 @@
 import itertools
+from tqdm.notebook import tqdm
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -74,3 +75,16 @@ def prepare_cats(pd_df: pd.DataFrame, cat_features, cat_fillna_value='NaN_catego
         if cat_fillna_value not in pd_df[cat_col].cat.categories:  # and cat_col not in int2str2cat_cols:
             pd_df[cat_col] = pd_df[cat_col].cat.add_categories(cat_fillna_value)
             pd_df[cat_col] = pd_df[cat_col].fillna(cat_fillna_value)
+
+
+def downcast(df: pd.DataFrame):
+    for column in tqdm(df.columns, total=df.shape[1]):
+        if df[column].dtype.name.lower() in ['category', 'bool']:
+            continue
+        elif ('float' in df[column].dtype.name.lower()) or (df[column].isna().any()):
+            df[column] = pd.to_numeric(df[column].astype(float), downcast='float')
+        elif df[column].dtype.name.lower().startswith('uint'):
+            df[column] = pd.to_numeric(df[column], downcast='unsigned')
+        elif df[column].dtype.name.lower().startswith('int'):
+            df[column] = pd.to_numeric(df[column], downcast='integer')
+    return df
