@@ -499,11 +499,13 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = False
+TUNE_MODEL = True
 TOTAL_OPTIMIZE_STEPS = 5
 INITIAL_RANDOM_OPTIMIZE_STEPS = 3
-TUNING_BOOSTING_ITERATIONS = 4500
+TUNING_BOOSTING_ITERATIONS = 3000
 REGULAR_BOOSTING_ITERATIONS = 6000
+
+MAKE_PREDS = True
 
 ################## PARAMS END ##################
 ################## DATA START ##################
@@ -540,8 +542,7 @@ test_pool = Pool(data=X_test,
                  cat_features=CAT_FEATURES,
                  )
 
-
-################## DATA END ##################
+print('################## DATA END ##################')
 
 
 def get_default_model(tuning=False):
@@ -565,7 +566,6 @@ def save_model_params(model_params, path):
     model_params_df.to_csv(path, index=False)
 
 
-################## TUNING START ##################
 print('################## TUNING START ##################')
 
 if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
@@ -741,40 +741,26 @@ with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_and_val_stop
 ################## MODEL REFIT END ##################
 ################## PREDICTION START ##################
 
-def predict_in_format(model, data, pool, group_col, predict_item_col, gt_col=None):
-    preds = model.predict(pool)
+if MAKE_PREDS:
+    from utils import predict_in_format
 
-    values = {group_col: data[group_col],
-              predict_item_col: data[predict_item_col],
-              'pred': preds}
+    subm_df = pd.read_feather(os.path.join(DATA_PATH, 'submission_df_preprocessed.feather'), columns=cols_to_use)
+    subm_df.sort_values([group_col], inplace=True)
+    subm_name = 'submission_22'
+    subm_filename = f'submissions/{subm_name}.csv'
+    subm_scores_filename = f'submissions/{subm_name}_scores.csv'
 
-    values_df = pd.DataFrame(values)
-    values_df.sort_values(by=[group_col, 'pred'], ascending=[True, False], inplace=True)
+    prepare_cats(subm_df, CAT_FEATURES)
 
-    if gt_col is not None:
-        values_df['gt'] = gt_col
-        ndcg_score = values_df.groupby(group_col)['gt'].apply(ndcg, at=5).mean()
-        print('Local test NDCG@5:', ndcg_score)
+    subm_pool = Pool(
+        data=subm_df,
+        group_id=subm_df[group_col],
+        cat_features=CAT_FEATURES,
+    )
 
-    return values_df
+    output_df = predict_in_format(model, subm_df, subm_pool, group_col, predict_item_col)
 
-subm_df = pd.read_feather(os.path.join(DATA_PATH, 'submission_df_preprocessed.feather'), columns=cols_to_use)
-subm_df.sort_values([group_col], inplace=True)
-subm_name = 'submission_22'
-subm_filename = f'submissions/{subm_name}.csv'
-subm_scores_filename = f'submissions/{subm_name}_scores.csv'
-
-prepare_cats(subm_df, CAT_FEATURES)
-
-subm_pool = Pool(
-    data=subm_df,
-    group_id=subm_df[group_col],
-    cat_features=CAT_FEATURES,
-)
-
-output_df = predict_in_format(model, subm_df, subm_pool, group_col, predict_item_col)
-
-output_df.to_csv(os.path.join(OUTPUT_FOLDER, subm_scores_filename), index=False)
-output_df[[group_col, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
+    output_df.to_csv(os.path.join(OUTPUT_FOLDER, subm_scores_filename), index=False)
+    output_df[[group_col, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
 
 ################## PREDICTION END ##################
