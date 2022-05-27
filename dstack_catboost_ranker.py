@@ -33,10 +33,10 @@ cols_lost_from_v1 = [
 cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 
 #### remove me
-# from random import shuffle
-# shuffle(cols_to_use)
-# cols_to_use = cols_to_use[:100]
-# cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
+from random import shuffle
+shuffle(cols_to_use)
+cols_to_use = cols_to_use[:100]
+cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
 cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
 #### remove above
 
@@ -65,14 +65,14 @@ print('################## DATA START ##################')
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
 y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
 
-# ####### remove me
-# rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
-# from random import shuffle
-# shuffle(rand_groups)
-# rand_groups = rand_groups[: int(len(rand_groups)/2)]
-# X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
-# y_train = y_train.loc[X_train.index]
-# ####### remove above
+####### remove me
+rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
+from random import shuffle
+shuffle(rand_groups)
+rand_groups = rand_groups[: int(len(rand_groups)/2)]
+X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
+y_train = y_train.loc[X_train.index]
+####### remove above
 
 prepare_cats(X_train, CAT_FEATURES)
 print('X_train.shape', X_train.shape)
