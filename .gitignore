@@ -6,3 +6,5 @@
 /data
 catboost_info*
 trained_models
+submissions/*_scores.csv
+__pycache__/

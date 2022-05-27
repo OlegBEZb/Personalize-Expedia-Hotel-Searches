@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-
 # # Imports
 
 # In[2]:
@@ -44,7 +40,7 @@ from utils import get_target
 # In[4]:
 
 
-USE_FULL = False
+USE_FULL = True
 
 data_path = 'data'
 raw_data_path = 'raw_data'
@@ -1946,9 +1942,9 @@ from features_dict import CAT_FEATURES, BOOL_COLS
 # In[158]:
 
 
-for c in CAT_FEATURES:
-    if c in df.columns:
-        df[c] = df[c].astype('category')
+# for c in CAT_FEATURES:
+#     if c in df.columns:
+#         df[c] = df[c].astype('category')
         
 # for c in BOOL_COLS:
 #     if c in df.columns:

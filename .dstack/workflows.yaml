@@ -7,18 +7,6 @@ workflows:
     artifacts:
       - data
 
-  - name: train-catboost
-    provider: python
-    version: 3.8
-    requirements: requirements.txt
-    python_script: dstack_catboost_ranker.py
-    depends-on:
-      - download-data:train_val_test
-    artifacts:
-      - outputs
-    resources:
-      gpu: ${{ gpu }}
-
   - name: preprocess-data
     provider: python
     version: 3.8
@@ -27,6 +15,18 @@ workflows:
     depends-on:
       - raw_data:latest
     artifacts:
-      - data
+      - data_temp
+    resources:
+      gpu: ${{ gpu }}
+
+  - name: train-catboost
+    provider: python
+    version: 3.8
+    requirements: requirements.txt
+    python_script: dstack_catboost_ranker.py
+    depends-on:
+      - preprocess-data:latest
+    artifacts:
+      - outputs
     resources:
       gpu: ${{ gpu }}

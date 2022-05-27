@@ -173,7 +173,14 @@ Trained on 400 features. 8000 epochs. Fair metrics:
 Retrained on train+val. Public score: 0.40845
 15. 24.05.2022
 Blending of 18th and 19th submissions. weight 0.65 for catboost and 0.35 for lgbm. Public score: 0.40878
-16. 
+16. 26.05.2022
+Large hyper-parameter tuning. Generally, increased LR. Tuned on train vs val. Retrained on train+val using 226 selected
+features.
+"val_NDCG@5": 0.4040699997013831,
+"train_NDCG@5": 0.49272081873197615,
+"test_NDCG@5": 0.40020674965410236
+Public score: 0.41120
+17. 
 
 # Open questions
 
