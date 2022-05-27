@@ -51,12 +51,12 @@ FIT_MODEL_NOT_LOAD = True
 TUNE_MODEL = True
 TOTAL_OPTIMIZE_STEPS = 4
 INITIAL_RANDOM_OPTIMIZE_STEPS = 2
-TUNING_BOOSTING_ITERATIONS = 3000
+TUNING_BOOSTING_ITERATIONS = 4000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
 DO_REFIT = False
 
-MAKE_PREDS = False
+MAKE_PREDS = True
 
 print('################## PARAMS END ##################')
 print('################## DATA START ##################')
@@ -128,7 +128,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     from skopt.plots import plot_convergence, plot_objective, plot_evaluations
 
     search_space = {
-        'depth': Integer(5, 8, prior='uniform', name='depth'),
+        # 'depth': Integer(5, 8, prior='uniform', name='depth'),
         'learning_rate': Real(0.03, 0.2, 'uniform', name='learning_rate'),
         'loss_function': Categorical(categories=['YetiRankPairwise', 'YetiRank'], name='loss_function'),
         'nan_mode': Categorical(categories=['Min', 'Max'], name='nan_mode'),
