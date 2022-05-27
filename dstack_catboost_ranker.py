@@ -38,7 +38,7 @@ cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 # cols_to_use = cols_to_use[:100]
 # cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
 # #### remove above
-# cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
+cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # leaky
 
 
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
@@ -256,13 +256,14 @@ if DO_EVAL:
 print('################## EVAL END ##################')
 print('################## FEATURE IMPORTANCE START ##################')
 
-explainer = shap.Explainer(model)
-shap_values = explainer(val_pool)  # X_val or val_pool
+if DO_EVAL:
+    explainer = shap.Explainer(model)
+    shap_values = explainer(val_pool)  # X_val or val_pool
 
-features = X_val.columns
-mean_shaps = np.abs(shap_values.values).mean(0)
-shaps_df = pd.DataFrame({'feature': features, 'shap': mean_shaps})
-shaps_df.to_csv(os.path.join(OUTPUT_FOLDER, 'shaps_df_trained_on_train_stopped_on_val.csv'), index=False)
+    features = X_val.columns
+    mean_shaps = np.abs(shap_values.values).mean(0)
+    shaps_df = pd.DataFrame({'feature': features, 'shap': mean_shaps})
+    shaps_df.to_csv(os.path.join(OUTPUT_FOLDER, 'shaps_df_trained_on_train_stopped_on_val.csv'), index=False)
 
 print('################## FEATURE IMPORTANCE END ##################')
 print("################## MODEL REFIT START ##################")
