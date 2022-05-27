@@ -31,7 +31,7 @@ features = {
         #     'comp2_inv',
         # 'comp2_rate_percent_diff',
         #     'comp3_inv',
-        'comp3_rate_percent_diff',
+        # 'comp3_rate_percent_diff',  # was a bit useful but accidentally removed
         #     'comp4_inv',
         #     'comp4_rate_percent_diff',
         #     'comp5_inv',
