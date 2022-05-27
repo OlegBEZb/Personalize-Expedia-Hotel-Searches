@@ -25,9 +25,8 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 2. Correlation between adv and position
 
 ## Preprocessing
-1. Down sampling negative instances improves training time and predictive performance
 2. Preprocess data for train_val together
-3. Missing values. Catboost does a weird thing
+3. Missing values. Catboost does only min or max
 4. Outlier detection: look for outliers on city and country level when replacing them with mean per category 
 5. Add negative sampling for non-matched pairs
 6. Return shuffle split back to refresh the distrib from time to time
@@ -36,6 +35,7 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 9. convert absolute percentage difference with competitor to the money difference (The absolute percentage difference 
 (if one exists) between Expedia and competitor N’s price (Expedia’s price the denominator))
 10. Price anomaly detection https://www.kaggle.com/code/nikitsoftweb/production-time-series-of-price-anomaly-detection/notebook
+11. Price_diff and star ranks
 
 ## Features
 2. agg for prop_loc_score_2 have to be in bins (too many values) https://stackoverflow.com/questions/45273731/binning-a-column-with-python-pandas
