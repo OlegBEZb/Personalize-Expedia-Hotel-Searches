@@ -14,6 +14,7 @@ features = {
         'prop_location_score1',
         'prop_location_score2',
         'prop_log_historical_price',
+        'prop_historical_price',
         'price_usd',
         'promotion_flag',
         'srch_destination_id',
@@ -137,6 +138,9 @@ features = {
 
     'price_features': [
         # 'price_per_day',
+        'price_per_day_pow_2',
+        'price_per_day_log_10',
+        'price_per_day_reciprocal'
         #     'price_per_trip',
 
         #     'price_usd_pow_0.33',

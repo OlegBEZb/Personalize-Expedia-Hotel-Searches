@@ -23,6 +23,49 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 cols_to_use = flatten_list(features.values())
 
+cols_lost_from_v1 = [
+    'price_per_day_rel_diff_to_min_price_per_day_per_prop_id_per_trip_start_date_quarter',
+    'price_per_day_rel_diff_to_median_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
+    'price_per_day_diff_to_max_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
+    'mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'price_per_day_rel_diff_to_mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'price_per_day_diff_to_median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_prop_starrating',
+    'price_per_day_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    'price_per_day_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    'price_per_day_rel_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    'min_price_per_day_per_prop_country_id',
+    'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id',
+    'price_per_day_diff_to_max_price_per_day_per_prop_country_id',
+    'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_prop_review_score',
+    'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
+    'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
+    'min_price_per_day_per_srch_destination_id_per_prop_review_score',
+    'max_price_per_day_per_srch_destination_id_per_prop_review_score',
+    'price_per_day_diff_to_max_price_per_day_per_srch_destination_id_per_prop_review_score',
+    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_starrating',
+    'median_price_per_day_per_srch_destination_id_per_prop_starrating',
+    'price_per_day_rel_diff_to_mean_price_per_day_per_srch_destination_id_per_prop_starrating',
+    'price_per_day_rel_diff_to_median_price_per_day_per_srch_destination_id_per_prop_starrating',
+    'price_per_day_diff_to_mean_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
+    'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
+    'price_per_day_diff_to_max_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
+    'price_per_day_rel_diff_to_max_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
+    'mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    'min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    'price_per_day_rel_diff_to_max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score',
+    'price_per_day_rel_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score'
+]
+
+cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
+
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
 
 GROUP_COL = 'srch_id'
