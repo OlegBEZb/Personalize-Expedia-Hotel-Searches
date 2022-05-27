@@ -54,7 +54,7 @@ INITIAL_RANDOM_OPTIMIZE_STEPS = 2
 TUNING_BOOSTING_ITERATIONS = 4000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
-DO_REFIT = True
+DO_REFIT = False
 
 MAKE_PREDS = True
 
@@ -106,8 +106,8 @@ def get_default_model(tuning=False):
                            early_stopping_rounds=500,
                            use_best_model=True,
                            task_type=TASK_TYPE,
-                           metric_period=10,
-                           #     'custom_metric': ['NDCG:top=5;type=Base;denominator=LogPosition;hints=skip_train~false'], # :
+                           metric_period=50,
+                           # custom_metric=['NDCG:top=5;type=Base;denominator=LogPosition;hints=skip_train~false'],
                            )
     return model
 
