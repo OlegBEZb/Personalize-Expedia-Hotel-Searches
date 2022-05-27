@@ -49,12 +49,12 @@ TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
 TUNE_MODEL = True
-TOTAL_OPTIMIZE_STEPS = 4
+TOTAL_OPTIMIZE_STEPS = 3
 INITIAL_RANDOM_OPTIMIZE_STEPS = 2
 TUNING_BOOSTING_ITERATIONS = 4000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
-DO_REFIT = False
+DO_REFIT = True
 
 MAKE_PREDS = True
 
@@ -312,6 +312,7 @@ if MAKE_PREDS:
 
     output_df = predict_in_format(model, subm_df, subm_pool, GROUP_COL, PREDICT_ITEM_COL)
 
+    os.makedirs(os.path.join(OUTPUT_FOLDER, 'submissions'), exist_ok=True)
     output_df.to_csv(os.path.join(OUTPUT_FOLDER, subm_scores_filename), index=False)
     output_df[[group_col, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
 
