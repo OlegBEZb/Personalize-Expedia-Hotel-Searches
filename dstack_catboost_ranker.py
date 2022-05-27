@@ -54,7 +54,7 @@ DO_REFIT = False
 
 MAKE_PREDS = True
 
-################## PARAMS END ##################
+print('################## PARAMS END ##################')
 print('################## DATA START ##################')
 
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
@@ -102,6 +102,7 @@ def get_default_model(tuning=False):
                            early_stopping_rounds=500,
                            use_best_model=True,
                            task_type=TASK_TYPE,
+                           metric_period=10,
                            #     'custom_metric': ['NDCG:top=5;type=Base;denominator=LogPosition;hints=skip_train~false'], # :
                            )
     return model
@@ -213,9 +214,9 @@ if FIT_MODEL_NOT_LOAD:
         json.dump(model_val_params, fp)
 else:
     pass
-# model = CatBoostRegressor()
-# model.load_model(model_name, format='cbm')
-# CAT_FEATURES = np.array(model.feature_names_)[model.get_cat_feature_indices()].tolist()
+    # model = CatBoostRegressor()
+    # model.load_model(model_name, format='cbm')
+    # CAT_FEATURES = np.array(model.feature_names_)[model.get_cat_feature_indices()].tolist()
 
 metrics_dict = dict()
 metrics_dict['val_NDCG@5'] = model.eval_metrics(val_pool,
@@ -285,8 +286,8 @@ if DO_REFIT:
     with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
         json.dump(metrics_dict, fp)
 
-################## MODEL REFIT END ##################
-################## PREDICTION START ##################
+print('################## MODEL REFIT END ##################')
+print('################## PREDICTION START ##################')
 
 if MAKE_PREDS:
     from utils import predict_in_format
@@ -310,4 +311,4 @@ if MAKE_PREDS:
     output_df.to_csv(os.path.join(OUTPUT_FOLDER, subm_scores_filename), index=False)
     output_df[[group_col, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
 
-################## PREDICTION END ##################
+print('################## PREDICTION END ##################')
