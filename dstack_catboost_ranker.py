@@ -37,7 +37,7 @@ from random import shuffle
 shuffle(cols_to_use)
 cols_to_use = cols_to_use[:100]
 cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
-cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train']]  # looks leaky
+cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
 #### remove above
 
 
@@ -72,7 +72,7 @@ shuffle(rand_groups)
 rand_groups = rand_groups[: int(len(rand_groups)/2)]
 X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
 y_train = y_train.loc[X_train.index]
-#######
+####### remove above
 
 prepare_cats(X_train, CAT_FEATURES)
 print('X_train.shape', X_train.shape)
