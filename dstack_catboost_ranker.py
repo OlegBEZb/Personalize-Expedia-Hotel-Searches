@@ -36,7 +36,7 @@ cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 from random import shuffle
 shuffle(cols_to_use)
 cols_to_use = cols_to_use[:150]
-cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
+cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
 cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
 #### remove above
 
