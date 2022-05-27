@@ -35,7 +35,7 @@ cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 #### remove me
 from random import shuffle
 shuffle(cols_to_use)
-cols_to_use = cols_to_use[:150]
+cols_to_use = cols_to_use[:100]
 cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
 cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
 #### remove above
@@ -49,13 +49,13 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = False
+TUNE_MODEL = True
 TOTAL_OPTIMIZE_STEPS = 3
 INITIAL_RANDOM_OPTIMIZE_STEPS = 2
-TUNING_BOOSTING_ITERATIONS = 4000
+TUNING_BOOSTING_ITERATIONS = 3000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
-DO_REFIT = False
+DO_REFIT = True
 
 MAKE_PREDS = True
 
