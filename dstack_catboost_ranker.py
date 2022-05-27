@@ -66,14 +66,14 @@ print('################## DATA START ##################')
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
 y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
 
-# ####### remove me
-# rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
-# from random import shuffle
-# shuffle(rand_groups)
-# rand_groups = rand_groups[: int(len(rand_groups)/2)]
-# X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
-# y_train = y_train.loc[X_train.index]
-# ####### remove above
+####### remove me
+rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
+from random import shuffle
+shuffle(rand_groups)
+rand_groups = rand_groups[: int(len(rand_groups)/2)]
+X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
+y_train = y_train.loc[X_train.index]
+####### remove above
 
 prepare_cats(X_train, CAT_FEATURES)
 print('X_train.shape', X_train.shape)
