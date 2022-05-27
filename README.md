@@ -38,28 +38,28 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 11. Price_diff and star ranks
 
 ## Features
-2. agg for prop_loc_score_2 have to be in bins (too many values) https://stackoverflow.com/questions/45273731/binning-a-column-with-python-pandas
-3. add visitor_hist_adr_usd and np.exp(df['prop_log_historical_price']) to comparison_col when build features for price
-4. dates of the staying + its features.
+2. add visitor_hist_adr_usd and np.exp(df['prop_log_historical_price']) to comparison_col when build features for price
+3. dates of the staying + its features.
    1. business trip = short and workday/non-weekend
    2. close to holiday +-3 days
    3. is a day off during a week day 
    4. add boolean for a weekend
-5. aggregations for day\weekday (sales per time period)
+4. aggregations for day\weekday (sales per time period)
    1. Having aggregations, try the difference between the current month and the prev, for example
-6. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
-7. order of the hotel 
+5. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
+6. order of the hotel 
     1. for this month
     2. for this dst region
     3. from this search region
     4. for this booking period
-8. Numerical features averaged over srch_id prop_id destination_id
-9. hotel_cumulative_share, a measure of how often a hotel has been booked previously, and 
+7. Numerical features averaged over srch_id prop_id destination_id
+8. hotel_cumulative_share, a measure of how often a hotel has been booked previously, and 
 previous_user_hotel_interaction (how), a categorical variable indicating if a user had clicked or purchased this hotel 
 previously, are the top 2 most important features for our logged-in users. Coalescing a hotel’s purchase history into 
 learned “embeddings” using latent factor models may add significant value to the model.
-10. Do date_time_ordinal for date, not datetime?
-11. order by previous booking prob
+9. Do date_time_ordinal for date, not datetime?
+10. order by previous booking prob
+11. Add std for groups
 
 ## Modeling
 1. Baselines
