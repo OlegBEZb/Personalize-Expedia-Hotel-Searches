@@ -36,6 +36,14 @@ cols_lost_from_v1 = [
 
 cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 
+#### remove me
+from random import shuffle
+shuffle(cols_to_use)
+cols_to_use = cols_to_use[:100]
+cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
+#### remove above
+
+
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
 
 GROUP_COL = 'srch_id'
@@ -52,7 +60,7 @@ REGULAR_BOOSTING_ITERATIONS = 6000
 
 DO_REFIT = False
 
-MAKE_PREDS = True
+MAKE_PREDS = False
 
 print('################## PARAMS END ##################')
 print('################## DATA START ##################')
