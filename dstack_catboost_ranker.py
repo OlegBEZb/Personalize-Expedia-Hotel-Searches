@@ -32,12 +32,12 @@ cols_lost_from_v1 = [
 
 cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 
-#### remove me
-from random import shuffle
-shuffle(cols_to_use)
-cols_to_use = cols_to_use[:100]
-cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
-#### remove above
+# #### remove me
+# from random import shuffle
+# shuffle(cols_to_use)
+# cols_to_use = cols_to_use[:100]
+# cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
+# #### remove above
 
 
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
@@ -48,7 +48,7 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = True
+TUNE_MODEL = False
 TOTAL_OPTIMIZE_STEPS = 3
 INITIAL_RANDOM_OPTIMIZE_STEPS = 2
 TUNING_BOOSTING_ITERATIONS = 4000
