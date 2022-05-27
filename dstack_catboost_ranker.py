@@ -24,43 +24,13 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 cols_to_use = flatten_list(features.values())
 
 cols_lost_from_v1 = [
-    'price_per_day_rel_diff_to_min_price_per_day_per_prop_id_per_trip_start_date_quarter',
-    'price_per_day_rel_diff_to_median_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
-    'price_per_day_diff_to_max_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
-    'mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'price_per_day_rel_diff_to_mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'price_per_day_diff_to_median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_prop_starrating',
-    'price_per_day_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-    'price_per_day_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-    'price_per_day_rel_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
     'min_price_per_day_per_prop_country_id',
     'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id',
     'price_per_day_diff_to_max_price_per_day_per_prop_country_id',
     'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_prop_review_score',
     'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
     'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
-    'min_price_per_day_per_srch_destination_id_per_prop_review_score',
-    'max_price_per_day_per_srch_destination_id_per_prop_review_score',
-    'price_per_day_diff_to_max_price_per_day_per_srch_destination_id_per_prop_review_score',
     'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_starrating',
-    'median_price_per_day_per_srch_destination_id_per_prop_starrating',
-    'price_per_day_rel_diff_to_mean_price_per_day_per_srch_destination_id_per_prop_starrating',
-    'price_per_day_rel_diff_to_median_price_per_day_per_srch_destination_id_per_prop_starrating',
-    'price_per_day_diff_to_mean_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
-    'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
-    'price_per_day_diff_to_max_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
-    'price_per_day_rel_diff_to_max_price_per_day_per_prop_country_id_per_trip_start_date_quarter',
-    'mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-    'min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-    'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-    'price_per_day_rel_diff_to_max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score',
     'price_per_day_rel_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score'
 ]
 
@@ -79,6 +49,8 @@ TOTAL_OPTIMIZE_STEPS = 5
 INITIAL_RANDOM_OPTIMIZE_STEPS = 3
 TUNING_BOOSTING_ITERATIONS = 3000
 REGULAR_BOOSTING_ITERATIONS = 6000
+
+DO_REFIT = True
 
 MAKE_PREDS = False
 
@@ -152,7 +124,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
 
     search_space = {
         'depth': Integer(5, 8, prior='uniform', name='depth'),
-        'learning_rate': Real(0.04, 0.2, 'uniform', name='learning_rate'),
+        'learning_rate': Real(0.03, 0.2, 'uniform', name='learning_rate'),
         'loss_function': Categorical(categories=['YetiRankPairwise', 'YetiRank'], name='loss_function'),
         'nan_mode': Categorical(categories=['Min', 'Max'], name='nan_mode'),
         # On every iteration each possible split gets a score (for example,
@@ -276,40 +248,43 @@ shaps_df.to_csv(os.path.join(OUTPUT_FOLDER, 'shaps_df_trained_on_train_stopped_o
 print('################## FEATURE IMPORTANCE END ##################')
 print("################## MODEL REFIT START ##################")
 
-train_val_pool = Pool(data=pd.concat([X_train, X_val], axis=0),
-                      label=pd.concat([y_train, y_val], axis=0),
-                      group_id=pd.concat([X_train, X_val], axis=0)[GROUP_COL],
-                      cat_features=CAT_FEATURES,
-                      )
+if DO_REFIT:
 
-model = get_default_model(tuning=False)
-if TUNE_MODEL:
-    print("Using best params from tuned")
-    print(best_params)
-    model.set_params(**best_params)
-else:
-    print("Using default params")
+    train_val_pool = Pool(data=pd.concat([X_train, X_val], axis=0),
+                          label=pd.concat([y_train, y_val], axis=0),
+                          group_id=pd.concat([X_train, X_val], axis=0)[GROUP_COL],
+                          cat_features=CAT_FEATURES,
+                          )
 
-model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
-model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train_val'))
+    model = get_default_model(tuning=False)
+    if TUNE_MODEL:
+        print("Using best params from tuned")
+        print(best_params)
+        model.set_params(**best_params)
+    else:
+        print("Using default params")
 
-model_test_params = model.get_all_params()
-model_test_params['tree_count'] = model.tree_count_
-with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
-    json.dump(model_test_params, fp)
+    model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
+    model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train_val'))
 
-metrics_dict = dict()
-metrics_dict['train_val_NDCG@5'] = model.eval_metrics(train_val_pool,
-                                                      'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                      ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+    model_test_params = model.get_all_params()
+    model_test_params['tree_count'] = model.tree_count_
+    with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
+        json.dump(model_test_params, fp)
 
-metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
-                                                 'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                 ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+    metrics_dict = dict()
+    metrics_dict['train_val_NDCG@5'] = model.eval_metrics(train_val_pool,
+                                                          'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                          ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-print('test metrics', metrics_dict)
-with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
-    json.dump(metrics_dict, fp)
+    metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
+                                                     'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                     ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+
+    print('test metrics', metrics_dict)
+    with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
+        json.dump(metrics_dict, fp)
+
 ################## MODEL REFIT END ##################
 ################## PREDICTION START ##################
 
