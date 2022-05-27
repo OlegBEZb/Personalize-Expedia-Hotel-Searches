@@ -1,21 +1,17 @@
 import os
 import time
-import gc
 import json
 
 from catboost import CatBoostRanker, Pool
 import numpy as np
 import pandas as pd
-
 import matplotlib.pyplot as plt
-
 import shap
 
 from features_dict import features, CAT_FEATURES
-from utils import flatten_list
-from utils import prepare_cats
+from utils import flatten_list, prepare_cats
 
-################## PARAMS START ##################
+print('################## PARAMS START ##################')
 
 DATA_PATH = './data_temp'  # should be created during data processing or downloading
 OUTPUT_FOLDER = './outputs'
@@ -314,7 +310,7 @@ if MAKE_PREDS:
         cat_features=CAT_FEATURES,
     )
 
-    output_df = predict_in_format(model, subm_df, subm_pool, group_col, predict_item_col)
+    output_df = predict_in_format(model, subm_df, subm_pool, GROUP_COL, PREDICT_ITEM_COL)
 
     output_df.to_csv(os.path.join(OUTPUT_FOLDER, subm_scores_filename), index=False)
     output_df[[group_col, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
