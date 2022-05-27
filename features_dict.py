@@ -140,7 +140,7 @@ features = {
         # 'price_per_day',
         'price_per_day_pow_2',
         'price_per_day_log_10',
-        'price_per_day_reciprocal'
+        'price_per_day_reciprocal',
         #     'price_per_trip',
 
         #     'price_usd_pow_0.33',
