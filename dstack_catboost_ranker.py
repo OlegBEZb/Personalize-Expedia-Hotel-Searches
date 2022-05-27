@@ -55,6 +55,7 @@ INITIAL_RANDOM_OPTIMIZE_STEPS = 2
 TUNING_BOOSTING_ITERATIONS = 3000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
+DO_EVAL = False
 DO_REFIT = True
 
 MAKE_PREDS = True
@@ -65,14 +66,14 @@ print('################## DATA START ##################')
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
 y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
 
-####### remove me
-rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
-from random import shuffle
-shuffle(rand_groups)
-rand_groups = rand_groups[: int(len(rand_groups)/2)]
-X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
-y_train = y_train.loc[X_train.index]
-####### remove above
+# ####### remove me
+# rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
+# from random import shuffle
+# shuffle(rand_groups)
+# rand_groups = rand_groups[: int(len(rand_groups)/2)]
+# X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
+# y_train = y_train.loc[X_train.index]
+# ####### remove above
 
 prepare_cats(X_train, CAT_FEATURES)
 print('X_train.shape', X_train.shape)
@@ -210,45 +211,47 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
 print('################## TUNING END ##################')
 print('################## EVAL START ##################')
 
-if FIT_MODEL_NOT_LOAD:
-    print("Training on train and validating on validation")
-    model = get_default_model(tuning=False)
-    if TUNE_MODEL:
-        print("Using best params from tuned")
-        print(best_params)
-        model.set_params(**best_params)
+if DO_EVAL:
+
+    if FIT_MODEL_NOT_LOAD:
+        print("Training on train and validating on validation")
+        model = get_default_model(tuning=False)
+        if TUNE_MODEL:
+            print("Using best params from tuned")
+            print(best_params)
+            model.set_params(**best_params)
+        else:
+            print("Using default params")
+
+        model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
+        model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train'))
+
+        model_val_params = model.get_all_params()
+        model_val_params['tree_count'] = model.tree_count_
+        with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_stopped_on_val.json'), 'w') as fp:
+            json.dump(model_val_params, fp)
     else:
-        print("Using default params")
+        pass
+        # model = CatBoostRegressor()
+        # model.load_model(model_name, format='cbm')
+        # CAT_FEATURES = np.array(model.feature_names_)[model.get_cat_feature_indices()].tolist()
 
-    model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
-    model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train'))
+    metrics_dict = dict()
+    metrics_dict['val_NDCG@5'] = model.eval_metrics(val_pool,
+                                                    'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                    ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-    model_val_params = model.get_all_params()
-    model_val_params['tree_count'] = model.tree_count_
-    with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_stopped_on_val.json'), 'w') as fp:
-        json.dump(model_val_params, fp)
-else:
-    pass
-    # model = CatBoostRegressor()
-    # model.load_model(model_name, format='cbm')
-    # CAT_FEATURES = np.array(model.feature_names_)[model.get_cat_feature_indices()].tolist()
+    metrics_dict['train_NDCG@5'] = model.eval_metrics(train_pool,
+                                                      'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                      ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-metrics_dict = dict()
-metrics_dict['val_NDCG@5'] = model.eval_metrics(val_pool,
-                                                'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+    metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
+                                                     'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                     ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-metrics_dict['train_NDCG@5'] = model.eval_metrics(train_pool,
-                                                  'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                  ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
-
-metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
-                                                 'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                 ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
-
-print('eval metrics', metrics_dict)
-with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_stopped_on_val.json'), 'w') as fp:
-    json.dump(metrics_dict, fp)
+    print('eval metrics', metrics_dict)
+    with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_stopped_on_val.json'), 'w') as fp:
+        json.dump(metrics_dict, fp)
 
 print('################## EVAL END ##################')
 print('################## FEATURE IMPORTANCE START ##################')
