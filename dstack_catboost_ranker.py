@@ -32,12 +32,12 @@ cols_lost_from_v1 = [
 
 cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 
-# #### remove me
-# from random import shuffle
-# shuffle(cols_to_use)
-# cols_to_use = cols_to_use[:100]
-# cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
-# #### remove above
+#### remove me
+from random import shuffle
+shuffle(cols_to_use)
+cols_to_use = cols_to_use[:150]
+cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
+#### remove above
 
 
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
@@ -314,6 +314,6 @@ if MAKE_PREDS:
 
     os.makedirs(os.path.join(OUTPUT_FOLDER, 'submissions'), exist_ok=True)
     output_df.to_csv(os.path.join(OUTPUT_FOLDER, subm_scores_filename), index=False)
-    output_df[[group_col, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
+    output_df[[GROUP_COL, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
 
 print('################## PREDICTION END ##################')
