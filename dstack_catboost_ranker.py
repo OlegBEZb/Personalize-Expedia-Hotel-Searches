@@ -1,27 +1,45 @@
 import os
 import time
-import gc
 import json
 
 from catboost import CatBoostRanker, Pool
 import numpy as np
 import pandas as pd
-
 import matplotlib.pyplot as plt
-
 import shap
 
 from features_dict import features, CAT_FEATURES
-from utils import flatten_list
-from utils import prepare_cats
+from utils import flatten_list, prepare_cats
 
-################## PARAMS START ##################
+print('################## PARAMS START ##################')
 
 DATA_PATH = './data_temp'  # should be created during data processing or downloading
 OUTPUT_FOLDER = './outputs'
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 cols_to_use = flatten_list(features.values())
+
+cols_lost_from_v1 = [
+    'min_price_per_day_per_prop_country_id',
+    'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id',
+    'price_per_day_diff_to_max_price_per_day_per_prop_country_id',
+    'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_prop_review_score',
+    'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
+    'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
+    'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_starrating',
+    'price_per_day_rel_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_review_score'
+]
+
+cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
+
+#### remove me
+from random import shuffle
+shuffle(cols_to_use)
+cols_to_use = cols_to_use[:100]
+cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
+cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
+#### remove above
+
 
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
 
@@ -32,19 +50,32 @@ TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
 TUNE_MODEL = False
-TOTAL_OPTIMIZE_STEPS = 5
-INITIAL_RANDOM_OPTIMIZE_STEPS = 3
+TOTAL_OPTIMIZE_STEPS = 3
+INITIAL_RANDOM_OPTIMIZE_STEPS = 2
 TUNING_BOOSTING_ITERATIONS = 3000
 REGULAR_BOOSTING_ITERATIONS = 6000
 
-MAKE_PREDS = False
+DO_EVAL = False
+DO_REFIT = True
 
-################## PARAMS END ##################
-################## DATA START ##################
+MAKE_PREDS = True
+
+print('################## PARAMS END ##################')
+print('################## DATA START ##################')
 
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
-prepare_cats(X_train, CAT_FEATURES)
 y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
+
+####### remove me
+rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
+from random import shuffle
+shuffle(rand_groups)
+rand_groups = rand_groups[: int(len(rand_groups)/2)]
+X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
+y_train = y_train.loc[X_train.index]
+####### remove above
+
+prepare_cats(X_train, CAT_FEATURES)
 print('X_train.shape', X_train.shape)
 
 train_pool = Pool(data=X_train,
@@ -87,7 +118,8 @@ def get_default_model(tuning=False):
                            early_stopping_rounds=500,
                            use_best_model=True,
                            task_type=TASK_TYPE,
-                           #     'custom_metric': ['NDCG:top=5;type=Base;denominator=LogPosition;hints=skip_train~false'], # :
+                           metric_period=50,
+                           # custom_metric=['NDCG:top=5;type=Base;denominator=LogPosition;hints=skip_train~false'],
                            )
     return model
 
@@ -108,8 +140,8 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     from skopt.plots import plot_convergence, plot_objective, plot_evaluations
 
     search_space = {
-        'depth': Integer(5, 8, prior='uniform', name='depth'),
-        'learning_rate': Real(0.04, 0.2, 'uniform', name='learning_rate'),
+        # 'depth': Integer(5, 8, prior='uniform', name='depth'),
+        'learning_rate': Real(0.03, 0.2, 'uniform', name='learning_rate'),
         'loss_function': Categorical(categories=['YetiRankPairwise', 'YetiRank'], name='loss_function'),
         'nan_mode': Categorical(categories=['Min', 'Max'], name='nan_mode'),
         # On every iteration each possible split gets a score (for example,
@@ -176,52 +208,52 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     plt.show()
     plt.savefig(os.path.join(OUTPUT_FOLDER, 'convergence_plot.jpg'))
 
-################## TUNING END ##################
-################## EVAL START ##################
+print('################## TUNING END ##################')
 print('################## EVAL START ##################')
 
-if FIT_MODEL_NOT_LOAD:
-    print("Training on train and validating on validation")
-    model = get_default_model(tuning=False)
-    if TUNE_MODEL:
-        print("Using best params from tuned")
-        print(best_params)
-        model.set_params(**best_params)
+if DO_EVAL:
+
+    if FIT_MODEL_NOT_LOAD:
+        print("Training on train and validating on validation")
+        model = get_default_model(tuning=False)
+        if TUNE_MODEL:
+            print("Using best params from tuned")
+            print(best_params)
+            model.set_params(**best_params)
+        else:
+            print("Using default params")
+
+        model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
+        model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train'))
+
+        model_val_params = model.get_all_params()
+        model_val_params['tree_count'] = model.tree_count_
+        with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_stopped_on_val.json'), 'w') as fp:
+            json.dump(model_val_params, fp)
     else:
-        print("Using default params")
+        pass
+        # model = CatBoostRegressor()
+        # model.load_model(model_name, format='cbm')
+        # CAT_FEATURES = np.array(model.feature_names_)[model.get_cat_feature_indices()].tolist()
 
-    model.fit(train_pool, eval_set=val_pool, plot=False, verbose_eval=True)
-    model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train'))
+    metrics_dict = dict()
+    metrics_dict['val_NDCG@5'] = model.eval_metrics(val_pool,
+                                                    'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                    ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-    model_val_params = model.get_all_params()
-    model_val_params['tree_count'] = model.tree_count_
-    with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_stopped_on_val.json'), 'w') as fp:
-        json.dump(model_val_params, fp)
-else:
-    pass
-# model = CatBoostRegressor()
-# model.load_model(model_name, format='cbm')
-# CAT_FEATURES = np.array(model.feature_names_)[model.get_cat_feature_indices()].tolist()
+    metrics_dict['train_NDCG@5'] = model.eval_metrics(train_pool,
+                                                      'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                      ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-metrics_dict = dict()
-metrics_dict['val_NDCG@5'] = model.eval_metrics(val_pool,
-                                                'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+    metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
+                                                     'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                     ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-metrics_dict['train_NDCG@5'] = model.eval_metrics(train_pool,
-                                                  'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                  ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+    print('eval metrics', metrics_dict)
+    with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_stopped_on_val.json'), 'w') as fp:
+        json.dump(metrics_dict, fp)
 
-metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
-                                                 'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                 ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
-
-print('eval metrics', metrics_dict)
-with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_stopped_on_val.json'), 'w') as fp:
-    json.dump(metrics_dict, fp)
-
-################## EVAL END ##################
-################## FEATURE IMPORTANCE START ##################
+print('################## EVAL END ##################')
 print('################## FEATURE IMPORTANCE START ##################')
 
 explainer = shap.Explainer(model)
@@ -232,46 +264,48 @@ mean_shaps = np.abs(shap_values.values).mean(0)
 shaps_df = pd.DataFrame({'feature': features, 'shap': mean_shaps})
 shaps_df.to_csv(os.path.join(OUTPUT_FOLDER, 'shaps_df_trained_on_train_stopped_on_val.csv'), index=False)
 
-################## FEATURE IMPORTANCE END ##################
-################## MODEL REFIT START ##################
+print('################## FEATURE IMPORTANCE END ##################')
 print("################## MODEL REFIT START ##################")
 
-train_val_pool = Pool(data=pd.concat([X_train, X_val], axis=0),
-                      label=pd.concat([y_train, y_val], axis=0),
-                      group_id=pd.concat([X_train, X_val], axis=0)[GROUP_COL],
-                      cat_features=CAT_FEATURES,
-                      )
+if DO_REFIT:
 
-model = get_default_model(tuning=False)
-if TUNE_MODEL:
-    print("Using best params from tuned")
-    print(best_params)
-    model.set_params(**best_params)
-else:
-    print("Using default params")
+    train_val_pool = Pool(data=pd.concat([X_train, X_val], axis=0),
+                          label=pd.concat([y_train, y_val], axis=0),
+                          group_id=pd.concat([X_train, X_val], axis=0)[GROUP_COL],
+                          cat_features=CAT_FEATURES,
+                          )
 
-model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
-model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train_val'))
+    model = get_default_model(tuning=False)
+    if TUNE_MODEL:
+        print("Using best params from tuned")
+        print(best_params)
+        model.set_params(**best_params)
+    else:
+        print("Using default params")
 
-model_test_params = model.get_all_params()
-model_test_params['tree_count'] = model.tree_count_
-with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
-    json.dump(model_test_params, fp)
+    model.fit(train_val_pool, eval_set=test_pool, plot=False, verbose_eval=True)
+    model.save_model(os.path.join(OUTPUT_FOLDER, 'catboost_model_train_val'))
 
-metrics_dict = dict()
-metrics_dict['train_val_NDCG@5'] = model.eval_metrics(train_val_pool,
-                                                      'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                      ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+    model_test_params = model.get_all_params()
+    model_test_params['tree_count'] = model.tree_count_
+    with open(os.path.join(OUTPUT_FOLDER, 'model_params_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
+        json.dump(model_test_params, fp)
 
-metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
-                                                 'NDCG:top=5;type=Base;denominator=LogPosition',
-                                                 ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+    metrics_dict = dict()
+    metrics_dict['train_val_NDCG@5'] = model.eval_metrics(train_val_pool,
+                                                          'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                          ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
 
-print('test metrics', metrics_dict)
-with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
-    json.dump(metrics_dict, fp)
-################## MODEL REFIT END ##################
-################## PREDICTION START ##################
+    metrics_dict['test_NDCG@5'] = model.eval_metrics(test_pool,
+                                                     'NDCG:top=5;type=Base;denominator=LogPosition',
+                                                     ntree_start=model.tree_count_ - 1)['NDCG:top=5;type=Base'][0]
+
+    print('test metrics', metrics_dict)
+    with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_and_val_stopped_on_test.json'), 'w') as fp:
+        json.dump(metrics_dict, fp)
+
+print('################## MODEL REFIT END ##################')
+print('################## PREDICTION START ##################')
 
 if MAKE_PREDS:
     from utils import predict_in_format
@@ -290,9 +324,10 @@ if MAKE_PREDS:
         cat_features=CAT_FEATURES,
     )
 
-    output_df = predict_in_format(model, subm_df, subm_pool, group_col, predict_item_col)
+    output_df = predict_in_format(model, subm_df, subm_pool, GROUP_COL, PREDICT_ITEM_COL)
 
+    os.makedirs(os.path.join(OUTPUT_FOLDER, 'submissions'), exist_ok=True)
     output_df.to_csv(os.path.join(OUTPUT_FOLDER, subm_scores_filename), index=False)
-    output_df[[group_col, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
+    output_df[[GROUP_COL, 'prop_id']].to_csv(os.path.join(OUTPUT_FOLDER, subm_filename), index=False)
 
-################## PREDICTION END ##################
+print('################## PREDICTION END ##################')
