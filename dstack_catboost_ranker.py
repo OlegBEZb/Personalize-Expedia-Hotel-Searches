@@ -37,6 +37,7 @@ from random import shuffle
 shuffle(cols_to_use)
 cols_to_use = cols_to_use[:150]
 cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id']))
+cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train']]
 #### remove above
 
 
