@@ -32,13 +32,13 @@ cols_lost_from_v1 = [
 
 cols_to_use = [c for c in cols_to_use if c not in cols_lost_from_v1]
 
-#### remove me
-from random import shuffle
-shuffle(cols_to_use)
-cols_to_use = cols_to_use[:100]
-cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
-cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
-#### remove above
+# #### remove me
+# from random import shuffle
+# shuffle(cols_to_use)
+# cols_to_use = cols_to_use[:100]
+# cols_to_use = list(set(cols_to_use + ['srch_id', 'prop_id', 'random_bool']))
+# #### remove above
+# cols_to_use = [c for c in cols_to_use if c not in ['booking_prob_train', 'click_prob_train', 'book_per_click']]  # looks leaky
 
 
 CAT_FEATURES = [c for c in CAT_FEATURES if c in cols_to_use]
@@ -49,13 +49,13 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = False
-TOTAL_OPTIMIZE_STEPS = 3
-INITIAL_RANDOM_OPTIMIZE_STEPS = 2
-TUNING_BOOSTING_ITERATIONS = 3000
-REGULAR_BOOSTING_ITERATIONS = 6000
+TUNE_MODEL = True
+TOTAL_OPTIMIZE_STEPS = 10
+INITIAL_RANDOM_OPTIMIZE_STEPS = 5
+TUNING_BOOSTING_ITERATIONS = 5000
+REGULAR_BOOSTING_ITERATIONS = 7000
 
-DO_EVAL = False
+DO_EVAL = True
 DO_REFIT = True
 
 MAKE_PREDS = True
@@ -66,14 +66,14 @@ print('################## DATA START ##################')
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
 y_train = pd.read_feather(os.path.join(DATA_PATH, 'y_train.feather'))['target']
 
-####### remove me
-rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
-from random import shuffle
-shuffle(rand_groups)
-rand_groups = rand_groups[: int(len(rand_groups)/2)]
-X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
-y_train = y_train.loc[X_train.index]
-####### remove above
+# ####### remove me
+# rand_groups = X_train[X_train['random_bool'] == 1][GROUP_COL].unique()
+# from random import shuffle
+# shuffle(rand_groups)
+# rand_groups = rand_groups[: int(len(rand_groups)/2)]
+# X_train = X_train[~X_train[GROUP_COL].isin(rand_groups)]
+# y_train = y_train.loc[X_train.index]
+# ####### remove above
 
 prepare_cats(X_train, CAT_FEATURES)
 print('X_train.shape', X_train.shape)
@@ -312,7 +312,7 @@ if MAKE_PREDS:
 
     subm_df = pd.read_feather(os.path.join(DATA_PATH, 'submission_df_preprocessed.feather'), columns=cols_to_use)
     subm_df.sort_values([GROUP_COL], inplace=True)
-    subm_name = 'submission_22'
+    subm_name = 'submission_23'
     subm_filename = f'submissions/{subm_name}.csv'
     subm_scores_filename = f'submissions/{subm_name}_scores.csv'
 
