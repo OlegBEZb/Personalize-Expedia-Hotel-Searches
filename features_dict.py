@@ -867,7 +867,7 @@ features = {
         'prop_location_score2_diff_to_min_prop_location_score2_per_srch_id',
         'prop_location_score2_rel_diff_to_min_prop_location_score2_per_srch_id',
         'prop_location_score2_diff_to_max_prop_location_score2_per_srch_id',
-        'prop_location_score2_rel_difsrch_children_countf_to_max_prop_location_score2_per_srch_id'
+        'prop_location_score2_rel_diff_to_max_prop_location_score2_per_srch_id'
     ],
 
     'prop_location_score1_per_srch_id': [
