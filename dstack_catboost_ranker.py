@@ -83,7 +83,7 @@ REGULAR_BOOSTING_ITERATIONS = 6000
 MAKE_PREDS = False
 
 ################## PARAMS END ##################
-################## DATA START ##################
+print('################## DATA START ##################')
 
 X_train = pd.read_feather(os.path.join(DATA_PATH, 'X_train.feather'), columns=cols_to_use)
 prepare_cats(X_train, CAT_FEATURES)
@@ -219,8 +219,7 @@ if FIT_MODEL_NOT_LOAD and TUNE_MODEL:
     plt.show()
     plt.savefig(os.path.join(OUTPUT_FOLDER, 'convergence_plot.jpg'))
 
-################## TUNING END ##################
-################## EVAL START ##################
+print('################## TUNING END ##################')
 print('################## EVAL START ##################')
 
 if FIT_MODEL_NOT_LOAD:
@@ -263,8 +262,7 @@ print('eval metrics', metrics_dict)
 with open(os.path.join(OUTPUT_FOLDER, 'ndcg_scores_trained_on_train_stopped_on_val.json'), 'w') as fp:
     json.dump(metrics_dict, fp)
 
-################## EVAL END ##################
-################## FEATURE IMPORTANCE START ##################
+print('################## EVAL END ##################')
 print('################## FEATURE IMPORTANCE START ##################')
 
 explainer = shap.Explainer(model)
@@ -275,8 +273,7 @@ mean_shaps = np.abs(shap_values.values).mean(0)
 shaps_df = pd.DataFrame({'feature': features, 'shap': mean_shaps})
 shaps_df.to_csv(os.path.join(OUTPUT_FOLDER, 'shaps_df_trained_on_train_stopped_on_val.csv'), index=False)
 
-################## FEATURE IMPORTANCE END ##################
-################## MODEL REFIT START ##################
+print('################## FEATURE IMPORTANCE END ##################')
 print("################## MODEL REFIT START ##################")
 
 train_val_pool = Pool(data=pd.concat([X_train, X_val], axis=0),

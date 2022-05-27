@@ -13,6 +13,7 @@ features = {
         'prop_brand_bool',
         'prop_location_score1',
         'prop_location_score2',
+        'prop_location_score2_round',
         'prop_log_historical_price',
         'prop_historical_price',
         'price_usd',
@@ -138,7 +139,7 @@ features = {
 
     'price_features': [
         # 'price_per_day',
-        'price_per_day_pow_2',
+        # 'price_per_day_pow_2',
         'price_per_day_log_10',
         'price_per_day_reciprocal',
         #     'price_per_trip',
@@ -150,6 +151,7 @@ features = {
         # 'price_usd_log_10',
         #     'price_usd_log_2.72',
         #     'price_usd_reciprocal',
+        'price_usd_log10_norm_by_prop_id',
 
         #     'visitor_hist_adr_usd_pow_0.33',
         # 'visitor_hist_adr_usd_pow_0.5',
@@ -263,10 +265,7 @@ features = {
         'price_index_per_srch_id',
         'price_index_per_srch_destination_id',
         'price_index_per_prop_id',
-        #     'mean_click_bool_per_prop_id',
-        #     'mean_booking_bool_per_prop_id',
         #     'mean_srch_query_affinity_score',
-        #     'mean_position_per_prop_id',
     ],
 
     'uncategorized_features': [
@@ -327,7 +326,7 @@ features = {
         'price_per_day_diff_to_median_price_per_day_per_prop_id_per_trip_start_date_quarter',
         'price_per_day_rel_diff_to_median_price_per_day_per_prop_id_per_trip_start_date_quarter',
         # 'price_per_day_diff_to_min_price_per_day_per_prop_id_per_trip_start_date_quarter',
-        'price_per_day_rel_diff_to_min_price_per_day_per_prop_id_per_trip_start_date_quarter',
+        # 'price_per_day_rel_diff_to_min_price_per_day_per_prop_id_per_trip_start_date_quarter',
         'price_per_day_diff_to_max_price_per_day_per_prop_id_per_trip_start_date_quarter',
         'price_per_day_rel_diff_to_max_price_per_day_per_prop_id_per_trip_start_date_quarter'
     ],
@@ -340,27 +339,28 @@ features = {
         # 'price_per_day_diff_to_mean_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
         'price_per_day_rel_diff_to_mean_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
         # 'price_per_day_diff_to_median_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
-        'price_per_day_rel_diff_to_median_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
+        # 'price_per_day_rel_diff_to_median_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
         # 'price_per_day_diff_to_min_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
         'price_per_day_rel_diff_to_min_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
-        'price_per_day_diff_to_max_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
+        # 'price_per_day_diff_to_max_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter',
         # 'price_per_day_rel_diff_to_max_price_per_day_per_prop_id_per_srch_room_count_per_trip_start_date_quarter'
     ],
 
-    'per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2': [
-        'mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        #     'median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        'min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        'max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        # 'price_per_day_diff_to_mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        'price_per_day_rel_diff_to_mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        'price_per_day_diff_to_median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        # 'price_per_day_rel_diff_to_median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        #     'price_per_day_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
-        'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2'
-    ],
+    # was removed due to crucial granularity and replaced with prop_location_score2_round
+    # 'per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2': [
+    #     'mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     #     'median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     'min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     'max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     # 'price_per_day_diff_to_mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     'price_per_day_rel_diff_to_mean_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     'price_per_day_diff_to_median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     # 'price_per_day_rel_diff_to_median_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     #     'price_per_day_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2',
+    #     'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id_per_prop_location_score2'
+    # ],
 
     'price_per_day_per_visitor_location_country_id_per_prop_starrating': [
         'mean_price_per_day_per_visitor_location_country_id_per_prop_starrating',
@@ -372,7 +372,7 @@ features = {
         'price_per_day_diff_to_median_price_per_day_per_visitor_location_country_id_per_prop_starrating',
         'price_per_day_rel_diff_to_median_price_per_day_per_visitor_location_country_id_per_prop_starrating',
         # 'price_per_day_diff_to_min_price_per_day_per_visitor_location_country_id_per_prop_starrating',
-        'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_prop_starrating',
+        # 'price_per_day_rel_diff_to_min_price_per_day_per_visitor_location_country_id_per_prop_starrating',
         'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_prop_starrating',
         'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_prop_starrating'
     ],
@@ -392,20 +392,21 @@ features = {
         'price_per_day_rel_diff_to_max_price_per_day_per_srch_destination_id_per_srch_room_count_per_prop_review_score'
     ],
 
-    'per_day_per_srch_destination_id_per_trip_start_date_quarter': [
-        #     'mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        #  'median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        #  'min_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        #  'max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        # 'price_per_day_diff_to_mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        # 'price_per_day_rel_diff_to_mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        'price_per_day_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        # 'price_per_day_rel_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        #     'price_per_day_diff_to_min_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        #  'price_per_day_rel_diff_to_min_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        'price_per_day_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
-        'price_per_day_rel_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter'
-    ],
+    # was removed during the migration due to low scores
+    # 'per_day_per_srch_destination_id_per_trip_start_date_quarter': [
+    #     #     'mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     #  'median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     #  'min_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     #  'max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     # 'price_per_day_diff_to_mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     # 'price_per_day_rel_diff_to_mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     'price_per_day_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     # 'price_per_day_rel_diff_to_median_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     #     'price_per_day_diff_to_min_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     #  'price_per_day_rel_diff_to_min_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     'price_per_day_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter',
+    #     'price_per_day_rel_diff_to_max_price_per_day_per_srch_destination_id_per_trip_start_date_quarter'
+    # ],
 
     'per_day_per_prop_country_id': [
         #     'mean_price_per_day_per_prop_country_id',
@@ -550,6 +551,8 @@ features = {
         'book_per_click',
         'booking_prob_train',
         'click_prob_train',
+        #     'mean_click_bool_per_prop_id',
+        #     'mean_booking_bool_per_prop_id',
     ],
 
     'per_day_per_srch_destination_id': [
@@ -610,20 +613,21 @@ features = {
         'price_per_day_rel_diff_to_max_price_per_day_per_prop_country_id_per_trip_start_date_quarter'
     ],
 
-    'per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter': [
-        'mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'median_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        'min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'price_per_day_diff_to_mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'price_per_day_rel_diff_to_mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'price_per_day_diff_to_median_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'price_per_day_rel_diff_to_median_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'price_per_day_diff_to_min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        # 'price_per_day_diff_to_max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
-        'price_per_day_rel_diff_to_max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter'
-    ],
+    # was removed during V1->V2 due to low scores
+    # 'per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter': [
+    #     'mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'median_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     'min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'price_per_day_diff_to_mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'price_per_day_rel_diff_to_mean_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'price_per_day_diff_to_median_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'price_per_day_rel_diff_to_median_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'price_per_day_diff_to_min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     # 'price_per_day_diff_to_max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter',
+    #     'price_per_day_rel_diff_to_max_price_per_day_per_prop_country_id_per_srch_room_count_per_trip_start_date_quarter'
+    # ],
 
     'per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_starrating': [
         # 'mean_price_per_day_per_srch_destination_id_per_trip_start_date_quarter_per_prop_starrating',
@@ -842,11 +846,11 @@ features = {
         'max_prop_starrating_per_srch_id',
         'prop_starrating_diff_to_mean_prop_starrating_per_srch_id',
         'prop_starrating_rel_diff_to_mean_prop_starrating_per_srch_id',
-        'prop_starrating_diff_to_median_prop_starrating_per_srch_id',
+        # 'prop_starrating_diff_to_median_prop_starrating_per_srch_id',
         'prop_starrating_rel_diff_to_median_prop_starrating_per_srch_id',
         'prop_starrating_diff_to_min_prop_starrating_per_srch_id',
         'prop_starrating_rel_diff_to_min_prop_starrating_per_srch_id',
-        'prop_starrating_diff_to_max_prop_starrating_per_srch_id',
+        # 'prop_starrating_diff_to_max_prop_starrating_per_srch_id',
         'prop_starrating_rel_diff_to_max_prop_starrating_per_srch_id'
     ],
 
@@ -924,6 +928,17 @@ features = {
 
     'service_cols': [
         # 'index'
+    ],
+
+    'position_features': [
+        'mean_position_train',
+        'mean_position_train_when_not_random',
+        #     'mean_position_per_prop_id',
+    ],
+
+    'promotion': [
+        'mean_promotion_flag_per_srch_id',
+        'promotion_flag_diff_to_mean_promotion_flag_per_srch_id'
     ]
 }
 
