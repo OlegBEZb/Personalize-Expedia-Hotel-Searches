@@ -1,11 +1,18 @@
-# Personalize-Expedia-Hotel-Searches
- Data Mining assignment 2
+# Personalize Expedia Hotel Searches - ICDM 2013
+Data Mining assignment 2, group 65  
+Oleg Litvinov  
+Agoston Szabo  
+Nedim Azar
 
-##Data downloaded from here:
+## Original competition
+
+https://www.kaggle.com/competitions/expedia-personalized-sort/overview
+
+## Data downloaded from here:
 https://www.kaggle.com/competitions/2nd-assignment-dmt2022/data
 
 
-##Sources
+## Sources
 
 * Code for 4th best score (VU students 3 years ago):
 https://github.com/igorpejic/personalize_expedia_hotel_searches_2013
@@ -25,56 +32,54 @@ https://www.kaggle.com/competitions/expedia-personalized-sort/discussion/6228
 2. Correlation between adv and position
 
 ## Preprocessing
-2. Preprocess data for train_val together
-3. Missing values. Catboost does only min or max
-4. Outlier detection: look for outliers on city and country level when replacing them with mean per category 
-5. Add negative sampling for non-matched pairs
-6. Return shuffle split back to refresh the distrib from time to time
-7. Fill missing values with some historicals, competitors? 
-8. Fill missing prop_review_score, prop_location_score2, srch_query_affinity_score values with the worst case scenario?
-9. convert absolute percentage difference with competitor to the money difference (The absolute percentage difference 
+1. Preprocess data for train_val together
+2. Missing values. Catboost does only min or max
+3. Outliers
+   1. Outlier detection: look for outliers on city and country level when replacing them with mean per category 
+   2. Price anomaly detection https://www.kaggle.com/code/nikitsoftweb/production-time-series-of-price-anomaly-detection/notebook
+4. Add negative sampling for non-matched pairs
+5. Return shuffle split back to refresh the distrib from time to time
+6. Fill missing values with some historicals, competitors? 
+7. Fill missing prop_review_score, prop_location_score2, srch_query_affinity_score values with the worst case scenario?
+8. convert absolute percentage difference with competitor to the money difference (The absolute percentage difference 
 (if one exists) between Expedia and competitor N’s price (Expedia’s price the denominator))
-10. Price anomaly detection https://www.kaggle.com/code/nikitsoftweb/production-time-series-of-price-anomaly-detection/notebook
-11. Price_diff and star ranks
+9. Price_diff and star ranks
 
 ## Features
-2. add visitor_hist_adr_usd and np.exp(df['prop_log_historical_price']) to comparison_col when build features for price
-3. dates of the staying + its features.
+1. add visitor_hist_adr_usd and 'prop_historical_price' to comparison_col when build features for price
+2. dates of the staying + its features.
    1. business trip = short and workday/non-weekend
    2. close to holiday +-3 days
    3. is a day off during a week day 
    4. add boolean for a weekend
-4. aggregations for day\weekday (sales per time period)
+3. aggregations for day\weekday (sales per time period)
    1. Having aggregations, try the difference between the current month and the prev, for example
-5. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
-6. order of the hotel 
+4. calculate avg tax per country df['usr_extra_pay'] = df['gross_bookings_usd'] - df['price_usd']
+5. order of the hotel 
     1. for this month
     2. for this dst region
     3. from this search region
     4. for this booking period
-7. Numerical features averaged over srch_id prop_id destination_id
-8. hotel_cumulative_share, a measure of how often a hotel has been booked previously, and 
+6. hotel_cumulative_share, a measure of how often a hotel has been booked previously, and 
 previous_user_hotel_interaction (how), a categorical variable indicating if a user had clicked or purchased this hotel 
 previously, are the top 2 most important features for our logged-in users. Coalescing a hotel’s purchase history into 
 learned “embeddings” using latent factor models may add significant value to the model.
-9. Do date_time_ordinal for date, not datetime?
-10. order by previous booking prob
-11. Add std for groups
+7. Do date_time_ordinal for date, not datetime?
+8. order by previous booking prob
+9. Add std for groups
 
 ## Modeling
 1. Baselines
-   1. Add random baseline and evaluate internally
    2. Ranking baseline
    3. Add default model (for each dst country predict the most famous hotels)
    4. Add baseline from https://github.com/benhamner/ExpediaPersonalizedSortCompetition to our baselines 
 2. Try lambdaMART (+xgboost\lgbm optimising lambdaMART) https://github.com/sophwats/XGBoost-lambdaMART/blob/master/LambdaMART%20from%20XGBoost.ipynb
 3. Boosting: do not encode site_id, prop_id etc - they have to be naturally granular
 4. add ordinal categories to catboost
-5. Train model on train+val combined 
-6. try classification once again
+5. try classification once again
       1. Random forest
-      2. Extreme trees
-7. Catboost split evaluation into batches and avg
+      2.Extreme trees 
+6. Catboost split evaluation into batches and avg in case of memory issues
 
 ## Unsorted backlog
 1. use position as a feature but ONLY when random is False 
@@ -121,10 +126,10 @@ Public LB: 0.36825
 Validation is changed into GroupShuffleSplit
 Public LB: 0.33767
 5. Simple validation split is added. srch_id % 10 == 5 -> test, srch_id % 10 == 1 -> val, rest ->train. Idea from https://arxiv.org/pdf/1311.7679v1.pdf 
-Only 200 epochs.
-Train: 0.07871
-Val: 0.35554
-Test: 0.35682
+Only 200 epochs.  
+Train: 0.07871  
+Val: 0.35554  
+Test: 0.35682   
 Public LB: 0.31550
 6. 08.05.2022
 Public LB: 0.33190
@@ -137,9 +142,9 @@ Public LB: 0.38823
 Train: 0.45396  
 Val: 0.39305  
 Test: 0.39381  
-Public LB: 0.39492
-12th submission. CatBoostRanker, bestIteration = 4997. 198 added new aggregated features
-Val: 0.40018
+Public LB: 0.39492  
+12th submission. CatBoostRanker, bestIteration = 4997. 198 added new aggregated features  
+Val: 0.40018  
 Public LB: 0.40190
 10. 14.05.2022
 13th submission. SVD
@@ -163,7 +168,7 @@ Val: 0.40284
 Test: 0.39971  
 Public LB: 0.40694  
 17th submission.
-Trained on train + val, stopped on test. NOT ALLOWED TO ANALYSE, JUST TO CHECK THE BOOST FROM THE TRICK
+Trained on train + val, stopped on test. NOT ALLOWED TO ANALYSE, JUST TO CHECK THE BOOST FROM THE TRICK  
 Public LB: 0.40920
 14. 19.05.2022
 18th submission
@@ -171,18 +176,19 @@ LGBM trained on a lot of predictors
 Public score: 0.39566
 15. 24.05.2022
 19th submission
-Trained on 400 features. 8000 epochs. Fair metrics:
+Trained on 400 features. 8000 epochs. Fair metrics:  
 "train_NDCG@5": 0.45839115000448594,  
 "val_NDCG@5": 0.40318595229960297,  
 "test_NDCG@5": 0.39889310524098376  
 Retrained on train+val. Public score: 0.40845
 16. 24.05.2022
 20th submission
-Blending of 18th and 19th submissions. weight 0.65 for catboost and 0.35 for lgbm. Public score: 0.40878
+Blending of 18th and 19th submissions. weight 0.65 for catboost and 0.35 for lgbm.  
+Public score: 0.40878
 17. 26.05.2022
 21th submission
 Large hyper-parameter tuning. Generally, increased LR. Tuned on train vs val. Retrained on train+val using 226 selected
-features.
+features.  
 "train_NDCG@5": 0.49272081873197615,  
 "val_NDCG@5": 0.4040699997013831,  
 "test_NDCG@5": 0.40020674965410236  
@@ -200,7 +206,7 @@ Public score: 0.41247
 `{'learning_rate': 0.18955396053267756, 
 'loss_function': 'YetiRank', 
 'nan_mode': 'Min', 
-'l2_leaf_reg': 0.7119418600172993}`
+'l2_leaf_reg': 0.7119418600172993}`  
 "train_NDCG@5": 0.47907378294452035,  
 "val_NDCG@5": 0.40869611361177177,  
 "test_NDCG@5": 0.4046275150950173  
