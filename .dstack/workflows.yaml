@@ -25,7 +25,7 @@ workflows:
     requirements: requirements.txt
     python_script: dstack_catboost_ranker.py
     depends-on:
-      - preprocess-data:no_price_filtering_8_1_1_split
+      - preprocess-data:downsampling
     artifacts:
       - outputs
     resources:

@@ -20,9 +20,9 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 cols_to_use = flatten_list(features.values())
 
 cols_lost_from_v1 = [
-    'min_price_per_day_per_prop_country_id',
-    'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id',
-    'price_per_day_diff_to_max_price_per_day_per_prop_country_id',
+    # 'min_price_per_day_per_prop_country_id',
+    # 'price_per_day_rel_diff_to_min_price_per_day_per_prop_country_id',
+    # 'price_per_day_diff_to_max_price_per_day_per_prop_country_id',
     'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_prop_review_score',
     'price_per_day_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
     'price_per_day_rel_diff_to_max_price_per_day_per_visitor_location_country_id_per_srch_destination_id',
@@ -49,14 +49,14 @@ PREDICT_ITEM_COL = 'prop_id'
 TASK_TYPE = 'GPU'
 
 FIT_MODEL_NOT_LOAD = True
-TUNE_MODEL = True
+TUNE_MODEL = False
 TOTAL_OPTIMIZE_STEPS = 10
 INITIAL_RANDOM_OPTIMIZE_STEPS = 5
 TUNING_BOOSTING_ITERATIONS = 5000
 REGULAR_BOOSTING_ITERATIONS = 7000
 
 DO_EVAL = True
-DO_REFIT = True
+DO_REFIT = False
 
 MAKE_PREDS = True
 
