@@ -313,9 +313,9 @@ if MAKE_PREDS:
 
     subm_df = pd.read_feather(os.path.join(DATA_PATH, 'submission_df_preprocessed.feather'), columns=cols_to_use)
     subm_df.sort_values([GROUP_COL], inplace=True)
-    subm_name = 'submission_23'
-    subm_filename = f'submissions/{subm_name}.csv'
-    subm_scores_filename = f'submissions/{subm_name}_scores.csv'
+    SUBM_NAME = 'submission_23'
+    subm_filename = f'submissions/{SUBM_NAME}.csv'
+    subm_scores_filename = f'submissions/{SUBM_NAME}_scores.csv'
 
     prepare_cats(subm_df, CAT_FEATURES)
 

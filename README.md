@@ -133,10 +133,10 @@ Fitted for 2.5k iterations on Kaggle
 Public LB: 0.38823
 8. 10.05.2022, 3.75k iterations (early stop), original + prop location + historical price, Public LB: 0.39121
 9. 11.05.2022
-11th submission. CatBoostRanker, bestIteration = 4991. 157 features without aggregations (only price order per srch and dst ids)
-Train: 0.45396
-Val: 0.39305
-Test: 0.39381
+11th submission. CatBoostRanker, bestIteration = 4991. 157 features without aggregations (only price order per srch and dst ids)  
+Train: 0.45396  
+Val: 0.39305  
+Test: 0.39381  
 Public LB: 0.39492
 12th submission. CatBoostRanker, bestIteration = 4997. 198 added new aggregated features
 Val: 0.40018
@@ -148,42 +148,67 @@ Public: 0.27837
 14th submissio. LGBM
 Public: 0.38713
 12. 16.05.2022 
-Did a long selection of about a third (others were even not tried) aggregation parameters (some were checked with LossValueChange while the others with SHAP)
-Train: 0.4586
-Val: 0.39704
-Test: 0.39461
-Public LB: 0.40357
+Did a long selection of about a third (others were even not tried) aggregation parameters (some were checked with LossValueChange while the others with SHAP)  
+Train: 0.4586  
+Val: 0.39704  
+Test: 0.39461  
+Public LB: 0.40357  
 Trained for 5.5k epochs. The validation started distorting
 13. 17.05.2022
 16th submission.
 Switched to YetiRankPairwise. Trained twice faster and with better results. Worked a lot on feature selection. Processed
-about a half. Removed ones with 0 shap values.
-Train: 0.44847
-Val: 0.40284
-Test: 0.39971
-Public LB: 0.40694
+about a half. Removed ones with 0 shap values.  
+Train: 0.44847  
+Val: 0.40284  
+Test: 0.39971  
+Public LB: 0.40694  
 17th submission.
 Trained on train + val, stopped on test. NOT ALLOWED TO ANALYSE, JUST TO CHECK THE BOOST FROM THE TRICK
 Public LB: 0.40920
-14. 24.05.2022
-Trained on 400 features. 8000 epochs. Fair metrics:
-"val_NDCG@5": 0.40318595229960297,
-"train_NDCG@5": 0.45839115000448594,
-"test_NDCG@5": 0.39889310524098376
-Retrained on train+val. Public score: 0.40845
+14. 19.05.2022
+18th submission
+LGBM trained on a lot of predictors
+Public score: 0.39566
 15. 24.05.2022
+19th submission
+Trained on 400 features. 8000 epochs. Fair metrics:
+"train_NDCG@5": 0.45839115000448594,  
+"val_NDCG@5": 0.40318595229960297,  
+"test_NDCG@5": 0.39889310524098376  
+Retrained on train+val. Public score: 0.40845
+16. 24.05.2022
+20th submission
 Blending of 18th and 19th submissions. weight 0.65 for catboost and 0.35 for lgbm. Public score: 0.40878
-16. 26.05.2022
+17. 26.05.2022
+21th submission
 Large hyper-parameter tuning. Generally, increased LR. Tuned on train vs val. Retrained on train+val using 226 selected
 features.
-"val_NDCG@5": 0.4040699997013831,
-"train_NDCG@5": 0.49272081873197615,
-"test_NDCG@5": 0.40020674965410236
-Public score: 0.41120
-17. 
+"train_NDCG@5": 0.49272081873197615,  
+"val_NDCG@5": 0.4040699997013831,  
+"test_NDCG@5": 0.40020674965410236  
+Public score: 0.41120  
+18. 27.05.2022
+22th submission
+248 features, default parameters without refit
+"train_NDCG@5": 0.4537878607462358,  
+"val_NDCG@5": 0.4080801244174121,  
+"test_NDCG@5": 0.4049248757109859  
+Public score: 0.41247  
+**The competition is ended**
+19. 28.05.2022
+23th submission. 189 features, no downsampling. 10 rounds of skopt.  
+`{'learning_rate': 0.18955396053267756, 
+'loss_function': 'YetiRank', 
+'nan_mode': 'Min', 
+'l2_leaf_reg': 0.7119418600172993}`
+"train_NDCG@5": 0.47907378294452035,  
+"val_NDCG@5": 0.40869611361177177,  
+"test_NDCG@5": 0.4046275150950173  
+Public score: 0.41418  
+
+
 
 # Open questions
-
 1. comp_rate is 0 -> comp_rate_perc_diff should be 0. But it has a value.
 
 # Tried, not worked:

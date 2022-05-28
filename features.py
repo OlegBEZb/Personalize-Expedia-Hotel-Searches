@@ -1,5 +1,4 @@
 import gc
-from copy import deepcopy
 
 import numpy as np
 import pandas as pd
@@ -76,9 +75,9 @@ def get_time_features(pdf: pd.DataFrame, time_col, prefix=None, within_hour_feat
 def num_transformations(df, cols, powers=[0.33, 0.5, 2, 3], log_bases=[2, 10, np.e],
                         do_reciprocal=True, do_exp=True):
     for c in cols:
-        for p in powers:
-            if (p <= 2) or (p > 2 and all(df[c] < 100)):
-                df[f'{c}_pow_{p}'] = df[c] ** p
+        for power in powers:
+            if (power <= 2) or (power > 2 and all(df[c] < 100)):
+                df[f'{c}_pow_{power}'] = df[c] ** power
 
         for log_base in log_bases:
             df[f'{c}_log_{log_base}'] = np.log(df[c] + 1e-6) / np.log(log_base)

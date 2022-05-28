@@ -33,8 +33,8 @@ def permutation_importances(model, X, y, metric, **kwargs):
 
     imp = []
     for col in tqdm(X.columns, total=len(X.columns)):
-        m = metric_with_perm_column(model, X, y, col, metric, **kwargs)
-        imp.append(m - baseline)
+        score = metric_with_perm_column(model, X, y, col, metric, **kwargs)
+        imp.append(score - baseline)
 
     #     import multiprocessing
     #     from multiprocessing import Pool
@@ -70,6 +70,8 @@ def get_and_plot_feature_imp_catboost(model, X, y, method, top_n=None, **kwargs)
     Returns:
 
     """
+    assert method in ['Permutation', 'ShapValues', 'LossFunctionChange', 'PredictionValuesChange', 'SHAP']
+
     if method == "Permutation":
         fi = permutation_importances(model=model, X=X, y=y, **kwargs)
 
@@ -96,7 +98,6 @@ def get_and_plot_feature_imp_catboost(model, X, y, method, top_n=None, **kwargs)
 
         if top_n is not None:
             feature_score = feature_score.head(top_n)
-            # 26/11/2020 Oleg removed zeros
             feature_score = feature_score[feature_score['Score'] != 0]
 
         plt.rcParams["figure.figsize"] = (7, len(feature_score) / 4)
