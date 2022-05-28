@@ -8,6 +8,10 @@ Nedim Azar
 
 https://www.kaggle.com/competitions/expedia-personalized-sort/overview
 
+## Original competition
+
+https://www.kaggle.com/competitions/expedia-personalized-sort/overview
+
 ## Data downloaded from here:
 https://www.kaggle.com/competitions/2nd-assignment-dmt2022/data
 
