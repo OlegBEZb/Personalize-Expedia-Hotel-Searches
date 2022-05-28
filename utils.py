@@ -76,7 +76,7 @@ def prepare_cats(pd_df: pd.DataFrame, cat_features, cat_fillna_value="NaN_catego
     cat_fillna_value = "NaN_category"
     for cat_col in cat_features:
         pd_df[cat_col] = pd_df[cat_col].astype("category")
-        if (cat_fillna_value not in pd_df[cat_col].cat.categories):  # and cat_col not in int2str2cat_cols:
+        if cat_fillna_value not in pd_df[cat_col].cat.categories:  # and cat_col not in int2str2cat_cols:
             pd_df[cat_col] = pd_df[cat_col].cat.add_categories(cat_fillna_value)
             pd_df[cat_col] = pd_df[cat_col].fillna(cat_fillna_value)
 

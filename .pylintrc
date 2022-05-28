@@ -1,6 +1,7 @@
 [pre-commit-hook]
 command=pylint
-limit=7.0
+limit=6.5
+ignore=utils.py  # bug for subscriptable pandas
 
 [FORMAT]
 # Maximum number of characters on a single line.
@@ -8,3 +9,14 @@ max-line-length=165
 
 # Good variable names which should always be accepted, separated by a comma
 good-names=i,j,k,ex,Run,_,pk,x,y,df,c,X
+
+[MESSAGES CONTROL]
+
+# Only show warnings with the listed confidence levels. Leave empty to show
+# all. Valid levels: HIGH, INFERENCE, INFERENCE_FAILURE, UNDEFINED
+confidence=
+
+# Enable the message, report, category or checker with the given id(s). You can
+# either give multiple identifier separated by comma (,) or put this option
+# multiple time. See also the "--disable" option for examples.
+disable=unsubscriptable-object
